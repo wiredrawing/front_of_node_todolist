@@ -1,7 +1,12 @@
 import React from 'react'
 import Task from './Task'
+import axios from 'axios'
 
 const Project = () => {
+  const apiEndPoint = "http://localhost:3000/api/project/create";
+  axios.defaults.baseURL = 'http://localhost:3001';
+  axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
+  axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
 
   const[taskUniqueKey, setTaskUniqueKey] = React.useState(0);
   const taskUniqueKeyCountUp = () => {
@@ -24,6 +29,7 @@ const Project = () => {
     user_id: "",
     code_number: "",
   });
+  const [taskError, setTaskError] = React.useState([]);
   console.log(project);
   const updateProject = (e) => {
     console.log(e);
@@ -52,6 +58,22 @@ const Project = () => {
       return temp;
     })
   }
+
+  // Request registering new project to api server.
+  const registerNewProject = () => {
+    let newProject = Object.assign(project);
+    axios.post(apiEndPoint, newProject).then((result) => {
+
+      // apiリクエスト失敗時
+      if (result.data.status !== true) {
+        setTaskError(result.data.response)
+      }
+      console.log(apiEndPoint);
+      console.log(result);
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
   return (
     <React.Fragment>
       <section>
@@ -72,6 +94,14 @@ const Project = () => {
           <input onInput={(e) => updateProject(e)} type="text" name="end_date" defaultValue={project.end_date}></input>
         </div>
       </section>
+      <section id="error">
+        {taskError.map((value, index) => {
+          return (<div>
+            <p>{value.msg}</p>
+          </div>)
+        })
+        }
+      </section>
       <section>
         <div>
           <p>プロジェクト名</p>
@@ -88,6 +118,10 @@ const Project = () => {
         <div>
           <p>プロジェクト終了予定日</p>
           <p>{project.end_date}</p>
+        </div>
+        <div>
+          <p>プロジェクト登録ボタン</p>
+          <p><button onClick={registerNewProject} >上記内容で新規登録</button></p>
         </div>
       </section>
       <section id="task-list">
