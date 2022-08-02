@@ -1,8 +1,10 @@
 import React from 'react'
 import axios from 'axios'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 
 function TaskList() {
+
+  const {projectId} = useParams();
   const apiEndPoint = "http://localhost:3000/api/task";
   const [ taskList, setTaskList ] = React.useState([]);
 

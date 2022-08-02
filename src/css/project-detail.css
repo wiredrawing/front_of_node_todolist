@@ -1,0 +1,10 @@
+#project-detail-box {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+#project-detail-box .unit {
+    width: 10%;
+    margin: 1%;
+    background-color: #DFDFDF;
+}

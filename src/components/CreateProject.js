@@ -2,11 +2,12 @@ import React from 'react'
 import Task from './Task'
 import axios from 'axios'
 
-const Project = () => {
+const CreateProject = () => {
+
   const apiEndPoint = "http://localhost:3000/api/project/create";
-  axios.defaults.baseURL = 'http://localhost:3001';
-  axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
-  axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
+  // axios.defaults.baseURL = 'http://localhost:3001';
+  // axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
+  // axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
 
   const[taskUniqueKey, setTaskUniqueKey] = React.useState(0);
   const taskUniqueKeyCountUp = () => {
@@ -25,9 +26,10 @@ const Project = () => {
     project_description: "",
     start_date: "",
     end_date: "",
-    is_displayed: "",
-    user_id: "",
+    is_displayed: "1",
+    user_id: "1",
     code_number: "",
+    image_id: [],
   });
   const [taskError, setTaskError] = React.useState([]);
   console.log(project);
@@ -140,4 +142,4 @@ const Project = () => {
   );
 }
 
-export default Project;
+export default CreateProject;
