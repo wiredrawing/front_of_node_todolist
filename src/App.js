@@ -15,13 +15,13 @@ function App() {
       <div className="App">
         <section id="global-menus">
           <div className="global-menu">
-            <p><Link to="/project">プロジェクト一覧</Link></p>
+            <p><Link to="/project">プロジェクト一覧 http://localhost:3001/project </Link></p>
           </div>
           <div className="global-menu">
-            <p><Link to="/project/create">新規プロジェクト作成</Link></p>
+            <p><Link to="/project/create">新規プロジェクト作成  http://localhost:3001/project/create </Link></p>
           </div>
           <div className="global-menu">
-            <p><Link to="/project">タスク一覧</Link></p>
+            <p><Link to="/task">タスク一覧  http://localhost:3001/task/ </Link></p>
           </div>
         </section>
         <Routes>
@@ -34,6 +34,7 @@ function App() {
             <Route path="create/:projectId" element={<Task/>}></Route>
             <Route path=":id" element={<TaskDetail/>}></Route>
             <Route path=":projctId" element={<TaskList/>}></Route>
+            <Route path="" element={<TaskList/>}></Route>
           </Route>
 
           <Route path="/userList/">

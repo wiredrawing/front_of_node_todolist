@@ -1,48 +1,58 @@
 import React from 'react'
 import axios from 'axios'
 import { Link, useParams } from 'react-router-dom'
+import config from "../config/const";
 
+// projectIdに左右されないタスク一覧を取得する
 function TaskList() {
-
-  const {projectId} = useParams();
-  const apiEndPoint = "http://localhost:3000/api/task";
+  const apiEndPoint = config.development.host + "/api/task";
   const [ taskList, setTaskList ] = React.useState([]);
 
   React.useEffect(() => {
 
     axios.get(apiEndPoint, {}).then((result) => {
       console.log(result);
-
       if ( result.data.status ) {
         setTaskList(result.data.response)
       }
     }).catch((error) => {
-
+      console.log(error);
     })
   }, [])
 
-  const taskListBox = {
-    display: "flex",
-    flexWrap: "wrap",
-  }
-  const taskUnitBox = {
-    width: "30%",
-    backgroundColor: "#DDD",
-    margin: "1%",
-  }
   return (
     <React.Fragment>
-      <div id="task-list-box" style={taskListBox}>
+      <table  className="table table-bordered" id="tasks-you-need-to-to" >
+        <thead>
+          <tr>
+            <td>プロジェクトID</td>
+            <td>タスク名</td>
+            <td>タスク概要</td>
+            <td>プロジェクト詳細へ</td>
+            <td>タスク開始予定日<br/>タスク終了予定日^</td>
+          </tr>
+        </thead>
+        <tbody>
         {taskList.map((value, index) => {
           return (
-            <div className="task-unit-box" key={index} style={taskUnitBox}>
-              <Link to={'/project/' + value.project_id}><p>{value.project_id}<br/>{value.Project.project_name}</p></Link>
-              <p>{value.task_name}</p>
-              <p>{value.task_description}</p>
-            </div>
+            <tr>
+              <td>{value.project_id}</td>
+              <td>{value.task_name}</td>
+              <td>{value.task_description}</td>
+              <td>
+                <Link to={'/project/' + value.project_id}>
+                  <p>{value.project_id}<br/>{value.Project.project_name}</p>
+                </Link>
+              </td>
+              <td>
+                {value.start_date}<br/>
+                {value.end_date}
+              </td>
+            </tr>
           )
         })}
-      </div>
+        </tbody>
+      </table>
     </React.Fragment>
   );
 }

@@ -46,41 +46,51 @@ export default function() {
 
   return (
     <React.Fragment>
-      <div id="project-wrapper-box">
+      <table  className="table table-bordered" >
+        <thead>
+          <tr>
+            <td>プロジェクトID</td>
+            <td>プロジェクト名</td>
+            <td>プロジェクト概要</td>
+            <td>開始予定日<br/>終了予定日</td>
+            <td>プロジェクト詳細へ</td>
+            <td>タスクの追加</td>
+            <td>タスク一覧へ</td>
+          </tr>
+        </thead>
+        <tbody>
         {projectList.map((value, index) => {
           return (
             <React.Fragment key={index}>
-
-              <div className="project-unit-box" style={projectWrapperBox}>
-                <div className="project-id" style={projectUnitBox}>
+              <tr>
+                <td>
                   <p>{value.id}</p>
-                </div>
-                <div className="project-name" style={projectUnitBox}>
+                </td>
+                <td>
                   <p>{value.project_name}</p>
-                </div>
-                <div className="project-description" style={projectUnitBox}>
+                </td>
+                <td>
                   <p>{value.project_description}</p>
-                </div>
-                <div className="project-start-date" style={projectUnitBox}>
+                </td>
+                <td>
                   <p>{value.start_date}</p>
-                </div>
-                <div className="project-end-date" style={projectUnitBox}>
                   <p>{value.end_date}</p>
-                </div>
-                <div style={projectUnitBox}>
+                </td>
+                <td>
                   <p><Link to={'/project/' + value.id}>プロジェクト詳細へ</Link></p>
+                </td>
+                <td>
                   <p><Link to={'/task/create/' + value.id}>このプロジェクトにタスクを追加</Link></p>
-                </div>
-                <div className="get-task-list" style={projectUnitBox}>
-                  <button onClick={moveToTaskList(value.id)} className="button-to-task-list-page">登録ずみタスク一覧へ</button>
-                </div>
-              </div>
+                </td>
+                <td>
+                  <button onClick={moveToTaskList(value.id)} className="btn btn-outline-info button-to-task-list-page">登録ずみタスク一覧へ</button>
+                </td>
+              </tr>
             </React.Fragment>
           );
         })}
-      </div>
-
-      <Outlet/>
+        </tbody>
+      </table>
     </React.Fragment>
   )
 }
