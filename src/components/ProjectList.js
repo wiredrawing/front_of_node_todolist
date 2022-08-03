@@ -1,14 +1,15 @@
 import React, { useEffect } from 'react'
 import axios from 'axios'
-import { Link, Outlet, useParams, useNavigate} from 'react-router-dom'
+import { Link, Outlet, useParams, useNavigate } from 'react-router-dom'
+import config from "../config/const";
 
-export default function() {
+const ProjectLit = function() {
 
-  const apiEndPoint = "http://localhost:3000/api/project/search";
+  const apiEndPoint = config.development.host + "/api/project/search";
   const [ projectList, setProjectList ] = React.useState([]);
   console.log("ProjectList ==>", useParams());
 
-  React.useEffect(() => {
+  useEffect(() => {
     // コンポーネント表示初回のみ
     axios.get(apiEndPoint).then((result) => {
       console.log(result)
@@ -22,41 +23,31 @@ export default function() {
 
   }, []);
 
-
   let naviate = useNavigate();
   const moveToTaskList = (index) => {
-    return (function (_index) {
+    return (function(_index) {
       return (e) => {
-        naviate("/task/" + _index);
+        naviate("/project/task/" + _index);
       }
     })(index)
-  }
-  const projectWrapperBox = {
-    display: "flex",
-    flexWrap: "wrap",
-  }
-  const projectUnitBox = {
-    width: "10%",
-    backgroundColor: "#DFDFDF",
-    border: "1px solid #AAA",
-    marginLeft: "2%",
-    marginRight: "2%",
-    marginBottom: "1%",
   }
 
   return (
     <React.Fragment>
-      <table  className="table table-bordered" >
+      <table className="table table-bordered">
         <thead>
-          <tr>
-            <td>プロジェクトID</td>
-            <td>プロジェクト名</td>
-            <td>プロジェクト概要</td>
-            <td>開始予定日<br/>終了予定日</td>
-            <td>プロジェクト詳細へ</td>
-            <td>タスクの追加</td>
-            <td>タスク一覧へ</td>
-          </tr>
+        <tr>
+          <td>プロジェクトID</td>
+          <td>
+            プロジェクト名<br/>
+            登録済みタスク数
+          </td>
+          <td>プロジェクト概要</td>
+          <td>開始予定日<br/>終了予定日</td>
+          <td>プロジェクト詳細へ</td>
+          <td>タスクの追加</td>
+          <td>タスク一覧へ</td>
+        </tr>
         </thead>
         <tbody>
         {projectList.map((value, index) => {
@@ -68,6 +59,7 @@ export default function() {
                 </td>
                 <td>
                   <p>{value.project_name}</p>
+                  <p>({value.Tasks.length}件)</p>
                 </td>
                 <td>
                   <p>{value.project_description}</p>
@@ -94,3 +86,5 @@ export default function() {
     </React.Fragment>
   )
 }
+
+export default ProjectLit

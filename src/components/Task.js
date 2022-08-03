@@ -1,17 +1,24 @@
-import React from 'react'
-// import CreateProject from './CreateProject'
-import { useParams } from 'react-router-dom'
+import React, { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import ProjectDetail from './ProjectDetail'
+import Image from './Image'
+import config from '../config/const'
 
-const Task = ({
-                taskNumber,
-                taskUniqueKey
-              }) => {
+const Task = () => {
   const params = useParams();
   let projectId = 0;
   if ( params.projectId ) {
     projectId = params.projectId;
+  }
+  // タスクに追加する画像リスト
+  const [ taskImages, setTaskImages ] = useState([]);
+  const completedUploadingImage = (imageId) => {
+    setTaskImages((previous) => {
+      let temp = previous.slice();
+      temp.push(imageId);
+      return temp;
+    })
   }
   const sectionStyle = {
     display: "flex",
@@ -24,9 +31,9 @@ const Task = ({
     width: "20%",
   }
   // 作業中のプロジェクト情報を取得する
-  const FETCH_PROJECT_INFO = "http://localhost:3000/api/project/detail/" + projectId
-  const ADD_NEW_TASK = "http://localhost:3000/api/task/create/"
-  // const [ project, setProject ] = React.useState({});
+  const API_TO_FETCH_PROJECT_INFO = config.development.host + "/api/project/detail/" + projectId
+  const API_TO_ADD_NEW_TASK = config.development.host + "/api/task/create/"
+  const API_TO_SHOW_IMAGE = config.development.host + "/api/image/show";
   const [ task, setTask ] = React.useState({
     unique_key: "",
     task_name: "",
@@ -36,17 +43,13 @@ const Task = ({
     priority: "",
     status: "",
     code_number: "",
+    user_id: 1,
+    image_id: taskImages,
+    project_id: projectId,
   });
-  const updateTask = (e) => {
-    setTask((previous) => {
-      let temp = Object.assign({}, previous);
-      temp[e.target.name] = e.target.value;
-      return temp;
-    })
-    return true;
-  }
 
   // 新規タスク情報登録ボタン押下時
+  let navigate = useNavigate();
   const addTaskInfo = (e) => {
     setTask((previous) => {
       let temp = Object.assign({}, previous);
@@ -54,10 +57,13 @@ const Task = ({
       return temp;
     })
     let postData = Object.assign({}, task);
-    axios.post(ADD_NEW_TASK, postData).then((result) => {
+    // タスク用画像を追加
+    postData.image_id = taskImages;
+    axios.post(API_TO_ADD_NEW_TASK, postData).then((result) => {
       console.log(result);
-      if (result.data.status) {
-
+      if ( result.data.status ) {
+        // 新規タスクの登録に完了したら当該プロジェクトのタスク一覧へ遷移させる
+        navigate("/project/task/" + projectId);
         return true;
       }
       return false;
@@ -67,19 +73,18 @@ const Task = ({
   }
   // 入力イベントの度に親コンポーネントにデータを共有する
   const onInput = (event) => {
-    let response = updateTask(event);
+    setTask((previous) => {
+      let temp = Object.assign({}, previous);
+      temp[event.target.name] = event.target.value;
+      return temp;
+    })
     return true;
-  }
-
-  // 指定したフォーム要素を削除する
-  const deleteThisTaskForm = () => {
-
   }
 
   React.useEffect(() => {
     (async () => {
       // コンポーネント初回表示時に作業中のプロジェクト情報を取得する
-      let project = await axios.get(FETCH_PROJECT_INFO, {}).then((result) => {
+      let project = await axios.get(API_TO_FETCH_PROJECT_INFO, {}).then((result) => {
         console.log(result);
         if ( result.data.status ) {
           console.log("API通信成功");
@@ -101,9 +106,6 @@ const Task = ({
   return (
     <React.Fragment>
       <ProjectDetail projectId={projectId}></ProjectDetail>
-      <div>
-        <p>ユニークKey: {taskUniqueKey}</p>
-      </div>
       <section style={sectionStyle}>
         <div style={taskInputStyle}>
           <p>プロジェクトID</p>
@@ -143,7 +145,14 @@ const Task = ({
           </button>
         </div>
       </section>
-      -
+      <div id="task-images">
+        {taskImages.map((value, index) => {
+          return (
+            <img width="15%" src={API_TO_SHOW_IMAGE + "/" + value}/>
+          )
+        })}
+      </div>
+      <Image callback={completedUploadingImage}/>
     </React.Fragment>
   )
 }

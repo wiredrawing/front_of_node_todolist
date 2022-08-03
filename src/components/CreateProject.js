@@ -1,26 +1,21 @@
-import React from 'react'
-import Task from './Task'
+import React, { useState } from 'react'
 import axios from 'axios'
+import Image from './Image'
+import config from '../config/const'
 
 const CreateProject = () => {
 
   const apiEndPoint = "http://localhost:3000/api/project/create";
-  // axios.defaults.baseURL = 'http://localhost:3001';
-  // axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
-  // axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
+  const apiToShowImage = config.development.host + "/api/image/show";
+  const [ projectImages, setProjectImages ] = useState([]);
 
-  const[taskUniqueKey, setTaskUniqueKey] = React.useState(0);
-  const taskUniqueKeyCountUp = () => {
-    setTaskUniqueKey((previous) => {
-      previous = previous + 1;
-      return previous;
-    });
-    return taskUniqueKey;
+  const completedUploadingImage = (imageId) => {
+    setProjectImages((previous) => {
+      let temp = previous.slice();
+      temp.push(imageId);
+      return temp;
+    })
   }
-  const taskCallback = (taskOriginal) => {
-    console.log("Taskコンポーネントからの通知--->", taskOriginal)
-  }
-  const [ taskList, setTaskList ] = React.useState([]);
   const [ project, setProject ] = React.useState({
     project_name: "",
     project_description: "",
@@ -29,9 +24,9 @@ const CreateProject = () => {
     is_displayed: "1",
     user_id: "1",
     code_number: "",
-    image_id: [],
+    image_id: projectImages,
   });
-  const [taskError, setTaskError] = React.useState([]);
+  const [ taskError, setTaskError ] = React.useState([]);
   console.log(project);
   const updateProject = (e) => {
     console.log(e);
@@ -42,32 +37,16 @@ const CreateProject = () => {
     });
   }
 
-  // delete the task which you clicked.
-  const deleteThisTask = (deleteIndex) => {
-    alert(deleteIndex);
-    setTaskList((previous) => {
-      let temp = previous.slice();
-      temp.splice(deleteIndex, 1);
-      return temp;
-    })
-  }
-  // add task record.
-  const addTask = () => {
-    setTaskList((previous) => {
-      let temp = [...previous];
-      // ユニークkeyをカウントアップ
-      temp.push({unique_key: taskUniqueKeyCountUp()});
-      return temp;
-    })
-  }
-
   // Request registering new project to api server.
   const registerNewProject = () => {
     let newProject = Object.assign(project);
+    // プロジェクト用画像を設定
+    newProject.image_id = projectImages;
+    console.log(newProject);
     axios.post(apiEndPoint, newProject).then((result) => {
 
       // apiリクエスト失敗時
-      if (result.data.status !== true) {
+      if ( result.data.status !== true ) {
         setTaskError(result.data.response)
       }
       console.log(apiEndPoint);
@@ -76,22 +55,41 @@ const CreateProject = () => {
       console.log(error);
     })
   }
+  const addNewProjectWrapper = {
+    display: "flex",
+    flexWrap: "wrap",
+  }
+  const addNewProjectUnit = {
+    width: "15%",
+    backgroundColor: "#DADADA",
+    margin: "3%",
+  }
+
   return (
     <React.Fragment>
-      <section>
-        <div>
+      <section style={addNewProjectWrapper}>
+        <div id="to-register-project-with-images">
+          {projectImages.map((value, index) => {
+            return (
+              <div className="selected-image-unit" key={index}>
+                <img alt={value} width="10%" src={apiToShowImage + "/" + value}/>
+              </div>
+            )
+          })}
+        </div>
+        <div className="add-new-project-unit" style={addNewProjectUnit}>
           <p>プロジェクト名</p>
           <input onInput={(e) => updateProject(e)} type="text" name="project_name" defaultValue={project.project_name}></input>
         </div>
-        <div>
+        <div className="add-new-project-unit" style={addNewProjectUnit}>
           <p>プロジェクト概要</p>
           <textarea onInput={(e) => updateProject(e)} name="project_description" defaultValue={project.project_description}/>
         </div>
-        <div>
+        <div className="add-new-project-unit" style={addNewProjectUnit}>
           <p>プロジェクト開始予定日</p>
           <input onInput={(e) => updateProject(e)} type="text" name="start_date" defaultValue={project.start_date}></input>
         </div>
-        <div>
+        <div className="add-new-project-unit" style={addNewProjectUnit}>
           <p>プロジェクト終了予定日</p>
           <input onInput={(e) => updateProject(e)} type="text" name="end_date" defaultValue={project.end_date}></input>
         </div>
@@ -123,21 +121,12 @@ const CreateProject = () => {
         </div>
         <div>
           <p>プロジェクト登録ボタン</p>
-          <p><button onClick={registerNewProject} >上記内容で新規登録</button></p>
+          <p>
+            <button onClick={registerNewProject}>上記内容で新規登録</button>
+          </p>
         </div>
       </section>
-      <section id="task-list">
-        {taskList.map((task, index) => {
-          return (
-            <React.Fragment key={task.unique_key}>
-              {task.unique_key}
-              <Task taskCallback={taskCallback} taskUniqueKey={task.unique_key}></Task>
-              <button onClick={(e) => deleteThisTask(index)}>このタスクを削除</button>
-            </React.Fragment>
-          );
-        })}
-      </section>
-      <button onClick={addTask}>Add task record.</button>
+      <Image callback={completedUploadingImage}></Image>
     </React.Fragment>
   );
 }

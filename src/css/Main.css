@@ -1,0 +1,22 @@
+#wrapper {
+    width: 90%;
+    margin: auto;
+    background-color: #FEFEFE;
+    border: 1px solid #DEDEDE;
+}
+
+#wrapper #body {
+    border: 1px solid #DEDEDE;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+#wrapper header {
+    background-color: #AEAEAE;
+    border: 1px solid #DEDEDE;
+}
+
+#wrapper footer {
+    background-color: #AEAEAE;
+    border: 1px solid #DEDEDE;
+}
