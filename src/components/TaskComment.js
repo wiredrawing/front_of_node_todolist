@@ -7,14 +7,6 @@ const TaskComment = ({ taskId }) => {
   const [ taskComments, setTaskComments ] = useState([]);
   const API_TO_FETCH_TASKCOMMENT = config.development.host + "/api/taskcomment/" + taskId;
   const API_TO_SHOW_IMAGE = config.development.host + "/api/image/show";
-  // axios.get(API_TO_FETCH_TASKCOMMENT).then((result) => {
-  //   setTaskComments((previous) => {
-  //     console.log(previous)
-  //     return result.data.response
-  //   });
-  //   console.log(result);
-  //   console.log("=======================");
-  // })
   useEffect(() => {
     console.log("=======================");
     axios.get(API_TO_FETCH_TASKCOMMENT).then((result) => {

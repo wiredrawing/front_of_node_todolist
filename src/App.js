@@ -19,12 +19,29 @@ import TaskComment from './components/TaskComment'
 function App() {
 
 
-  // API(corsテスト)
+  // API(corsテスト) => GETの場合
   // useEffect(() => {
   //   axios.get("http://localhost:8000/admin/api/line/reserve/unsent/7").then((result) => {
   //     console.log(" http://localhost:8000/admin/api/line/reserve/unsent/7 --->", result);
   //   })
   // }, [])
+
+  // API corsテスト (POSTの場合)
+  // useEffect(() => {
+  //   let postData = {
+  //     "channel_name": "ReactアプリケーションでPOSTリクエスト",
+  //     "channel_id": "wire-drawing.co.jp.1234567890",
+  //     "channel_secret": "wire-drawing.co.jp.123456789abcdefghijklmnopqrstuxwz",
+  //     "user_id": "wire-drawing.co.jp.U1234567891234567891234567891234",
+  //     "messaging_channel_id": "wire-drawing.co.jp.1234567890",
+  //     "messaging_channel_secret": "wire-drawing.co.jp.123456789abcdefghijklmnopqrstuxwz",
+  //     "messaging_user_id": "wire-drawing.co.jp.123456789abcdefghijklmnopqrstuxwz",
+  //     "messaging_channel_access_token": "wire-drawing.co.jp......"
+  //   }
+  //   axios.post("http://localhost:8000/admin/api/line/account/create", postData).then((result) => {
+  //     console.log(result);
+  //   })
+  // })
 
   return (
     <React.Fragment>
