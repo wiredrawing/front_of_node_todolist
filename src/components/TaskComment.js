@@ -2,8 +2,12 @@ import React, { useEffect, useState } from 'react'
 import config from '../config/const'
 import axios from 'axios'
 import task from './Task'
+import taskComment from './TaskComment'
 
-const TaskComment = ({ taskId }) => {
+const TaskComment = ({
+                       taskId,
+                       newCommentid
+                     }) => {
   const [ taskComments, setTaskComments ] = useState([]);
   const API_TO_FETCH_TASKCOMMENT = config.development.host + "/api/taskcomment/" + taskId;
   const API_TO_SHOW_IMAGE = config.development.host + "/api/image/show";
@@ -21,32 +25,36 @@ const TaskComment = ({ taskId }) => {
       }
     })
 
-  }, [])
+  }, [ newCommentid ])
   const imagesWrapper = {
     display: "flex",
     flexWrap: "wrap",
   }
   const innerImagesWrapper = {
-    width: "20%",
+    width: "10%",
     margin: "2%",
+  }
+  const commentUnitBox = {
+    backgroundColor: "#DEDEDE",
+    marginTop: "2%",
   }
   return (
     <React.Fragment>
-      {taskComments.map((value) => {
+      {taskComments !== null && taskComments.map((value) => {
         return (
-          <React.Fragment>
+          <section className="task-comment-unit-box" style={commentUnitBox}>
             <p>{value.id}</p>
             <p>{value.comment}</p>
             <div className="images-wrapper" style={imagesWrapper}>
               {value.CommentImages.map((value, index) => {
                 return (
                   <div className="inner-images-wrapper" style={innerImagesWrapper}>
-                    <img className="ajust" src={API_TO_SHOW_IMAGE + "/" + value.image_id}></img>{value.image_id}
+                    <img alt={value.image_id} className="ajust" src={API_TO_SHOW_IMAGE + "/" + value.image_id}></img>
                   </div>
                 )
               })}
             </div>
-          </React.Fragment>
+          </section>
         )
       })}
     </React.Fragment>

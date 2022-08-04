@@ -9,6 +9,7 @@ const TaskDetail = () => {
 
   const { id } = useParams();
   const [ task, setTask ] = useState({})
+  const [newCommentId, setNewCommentId] = useState(0);
   const API_TO_FETCH_TASK_DETAIL = config.development.host + "/api/task/" + id;
   const API_TO_SHOW_IMAGE = config.development.host + "/api/image/show";
   console.log(id);
@@ -32,6 +33,10 @@ const TaskDetail = () => {
     width: "20%",
     margin: "1%"
   }
+  const completedAddNewComment = (newCommentId) => {
+    console.log(newCommentId);
+    setNewCommentId(newCommentId);
+  }
   return (
     <React.Fragment>
       <section id="task-detail">
@@ -48,10 +53,9 @@ const TaskDetail = () => {
             )
           })}
         </div>
-        <CreateComment taskId={id}/>
+        <CreateComment taskId={id} callback={completedAddNewComment}/>
         <hr/>
-        {/*{task.id && <TaskComment taskId={task.id} />}*/}
-        <TaskComment taskId={id} />
+        <TaskComment taskId={id} newCommentid={newCommentId}/>
       </section>
     </React.Fragment>
   )

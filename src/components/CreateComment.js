@@ -4,7 +4,7 @@ import image from './Image'
 import config from '../config/const'
 import axios from 'axios'
 
-const CreateComment = ({ taskId }) => {
+const CreateComment = ({ taskId, callback }) => {
 
   const API_TO_ADD_NEW_COMMENT = config.development.host + "/api/taskcomment/create";
   const [ imageIdList, setImageIdList ] = useState([])
@@ -44,6 +44,9 @@ const CreateComment = ({ taskId }) => {
     postData.task_id = taskId;
     axios.post(API_TO_ADD_NEW_COMMENT, postData).then((result) => {
       console.log(result);
+      if (result.data.status) {
+        callback(result.data.response.id);
+      }
     })
   }
 
