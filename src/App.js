@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import './App.css';
 import "./css/Main.css";
 import CreateProject from './components/CreateProject'
@@ -13,9 +13,19 @@ import UserList from './components/UserList'
 import ProjectTaskList from './components/ProjectTaskList'
 import UploadImage from './components/UploadImage'
 import ImageList from './components/ImageList'
-
+import axios from 'axios'
+import TaskComment from './components/TaskComment'
 
 function App() {
+
+
+  // API(corsテスト)
+  // useEffect(() => {
+  //   axios.get("http://localhost:8000/admin/api/line/reserve/unsent/7").then((result) => {
+  //     console.log(" http://localhost:8000/admin/api/line/reserve/unsent/7 --->", result);
+  //   })
+  // }, [])
+
   return (
     <React.Fragment>
       <section id="wrapper">

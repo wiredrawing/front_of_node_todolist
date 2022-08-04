@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom'
 import config from '../config/const'
 import axios from 'axios'
 import CreateComment from './CreateComment'
+import TaskComment from './TaskComment'
 
 const TaskDetail = () => {
 
@@ -47,21 +48,10 @@ const TaskDetail = () => {
             )
           })}
         </div>
-        <CreateComment taskId={task.id}/>
+        <CreateComment taskId={id}/>
         <hr/>
-        {task.TaskComments && task.TaskComments.map((value, index) => {
-          return (
-            <React.Fragment>
-              <p>{value.id}</p>
-              <p>{value.comment}</p>
-              {value.CommentImages.map((value, index) => {
-                return (
-                  <p>{value.image_id}</p>
-                )
-              })}
-            </React.Fragment>
-          )
-        })}
+        {/*{task.id && <TaskComment taskId={task.id} />}*/}
+        <TaskComment taskId={id} />
       </section>
     </React.Fragment>
   )
