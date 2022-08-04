@@ -42,7 +42,7 @@ const Task = () => {
     end_date: "",
     priority: "",
     status: "",
-    code_number: "",
+    // code_number: "",
     user_id: 1,
     image_id: taskImages,
     project_id: projectId,

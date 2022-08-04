@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import config from "../config/const"
 import axios from 'axios'
 
@@ -21,6 +21,14 @@ const ProjectTaskList = ({ projectId }) => {
     })
   }, []);
 
+  let navigate = useNavigate();
+  const moveToTaskDetail = (index) => {
+    let taskNumber = index;
+    return function (e) {
+      navigate("/task/" + taskNumber);
+    }
+  }
+
   return (
     <React.Fragment>
       <table className="table table-bordered">
@@ -32,6 +40,7 @@ const ProjectTaskList = ({ projectId }) => {
             <td>タスクコード</td>
             <td>開始予定日<br/>終了予定日</td>
             <td>担当者ID</td>
+            <td>タスク詳細へ</td>
           </tr>
         </thead>
         <tbody>
@@ -44,6 +53,7 @@ const ProjectTaskList = ({ projectId }) => {
               <td>{value.code_number}</td>
               <td>{value.start_date}<br/>{value.end_date}</td>
               <td>{value.user_id}</td>
+              <td><button onClick={moveToTaskDetail(value.id)} className="btn btn-outline-info button-to-task-list-page ">タスク詳細へ</button></td>
             </tr>
           )
         })
