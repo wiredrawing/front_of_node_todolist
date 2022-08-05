@@ -9,7 +9,7 @@ const TaskDetail = () => {
 
   const { id } = useParams();
   const [ task, setTask ] = useState({})
-  const [newCommentId, setNewCommentId] = useState(0);
+  const [ newCommentId, setNewCommentId ] = useState(0);
   const API_TO_FETCH_TASK_DETAIL = config.development.host + "/api/task/" + id;
   const API_TO_SHOW_IMAGE = config.development.host + "/api/image/show";
   console.log(id);
