@@ -12,7 +12,7 @@ const CreateTask = () => {
   return (
     <React.Fragment>
       <ProjectDetail projectId={projectId}/>
-      <Task/>
+      <Task projectId={projectId}/>
     </React.Fragment>
   )
 

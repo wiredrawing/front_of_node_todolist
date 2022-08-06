@@ -2,15 +2,28 @@ import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import config from "../config/const"
 import axios from 'axios'
-import task from './Task'
+import moment from 'moment'
 
 const ProjectTaskList = ({ projectId }) => {
   const [ taskList, setTaskList ] = useState([]);
   const { id } = useParams();
+  const [utility, setUtility] = useState({});
   console.log("projectId ====> ", projectId);
   console.log("id ====> ", id);
   const apiEndPoint = config.development.host + "/api/project/task/" + id
   const API_TO_SEND_STAR = config.development.host + "/api/star"
+  const API_TO_FETCH_UTILITY = config.development.host + "/api/utility";
+  // ユーティリティ情報を取得する
+  const fetchUtility = () => {
+    axios.get(API_TO_FETCH_UTILITY).then((result) => {
+      if (result.data.status) {
+        setUtility((previous) => {
+          console.log("utility ---->", result.data.response);
+          return result.data.response;
+        })
+      }
+    })
+  }
   // レンダリング初回のみロード
   const fetchTaskList = async () => {
     let temp = await axios.get(apiEndPoint, {});
@@ -23,6 +36,8 @@ const ProjectTaskList = ({ projectId }) => {
     fetchTaskList().then((result) => {
       console.log(result);
     })
+    // utilityを取得
+    fetchUtility();
   }, []);
 
   let navigate = useNavigate();
@@ -60,6 +75,7 @@ const ProjectTaskList = ({ projectId }) => {
             <td>タスク概要</td>
             <td>タスクコード</td>
             <td>スター</td>
+            <td>優先順位<br/>作業ステータス</td>
             <td>開始予定日<br/>終了予定日</td>
             <td>担当者ID</td>
             <td>タスク詳細へ</td>
@@ -74,10 +90,24 @@ const ProjectTaskList = ({ projectId }) => {
               <td>{value.task_description}</td>
               <td>{value.code_number}</td>
               <td>
-                {value.Stars && value.Stars.length}
-                <button className="btn btn-outline-primary" onClick={sendStar(value.id)}>スターを送る</button>
+                <button className="btn btn-outline-primary" onClick={sendStar(value.id)}>☆({value.Stars && value.Stars.length})を送る</button>
               </td>
-              <td>{value.start_date}<br/>{value.end_date}</td>
+              <td>
+                {utility.priority && utility.priority.map((priority) => {
+                  if (parseInt(priority.id) === parseInt(value.priority)) {
+                    return (<p>{priority.value}</p>);
+                  }
+                })}
+                {utility.status && utility.status.map((status) => {
+                  if (parseInt(status.id) === parseInt(value.status)) {
+                    return (<p>{status.value}</p>);
+                  }
+                })}
+              </td>
+              <td>
+                {moment(value.start_date).format("yyyy年MM月DD日")}<br/>
+                {moment(value.end_date).format("yyyy年MM月DD日")}
+              </td>
               <td>{value.user_id}</td>
               <td><button onClick={moveToTaskDetail(value.id)} className="btn btn-outline-info button-to-task-list-page ">タスク詳細へ</button></td>
             </tr>

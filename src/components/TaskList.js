@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import config from "../config/const";
@@ -8,9 +8,19 @@ import moment from 'moment'
 function TaskList() {
   const apiEndPoint = config.development.host + "/api/task";
   const API_TO_SEND_STAR = config.development.host + "/api/star";
+  const API_TO_FETCH_UTILITY = config.development.host + "/api/utility";
+  const [utility, setUtility ] = useState({});
+  const fetchUtility = () => {
+    axios.get(API_TO_FETCH_UTILITY).then((result) => {
+      if (result.data.status) {
+        setUtility(result.data.response);
+      }
+    })
+  }
   const [ taskList, setTaskList ] = React.useState([]);
-
   React.useEffect(() => {
+    // ユーティリティを取得
+    fetchUtility();
     axios.get(apiEndPoint, {}).then((result) => {
       console.log(result);
       if ( result.data.status ) {
@@ -65,6 +75,7 @@ function TaskList() {
             <td>タスク名</td>
             <td>タスク概要</td>
             <td>スター</td>
+            <td>優先順位<br/>作業ステータス</td>
             <td>プロジェクト詳細へ</td>
             <td>タスク開始予定日<br/>タスク終了予定日</td>
             <td>タスク詳細へ</td>
@@ -81,6 +92,18 @@ function TaskList() {
               <td>
                 ☆:{value.Stars.length}<br/>
                 <button onClick={sendStar(value.id)} className="btn btn-outline-primary">☆を送る</button>
+              </td>
+              <td>
+                {utility.priority && utility.priority.map((priority) => {
+                  if (parseInt(priority.id) === parseInt(value.priority)) {
+                    return (<p>{priority.value}</p>);
+                  }
+                })}
+                {utility.status && utility.status.map((status) => {
+                  if (parseInt(status.id) === parseInt(value.status)) {
+                    return (<p>{status.value}</p>);
+                  }
+                })}
               </td>
               <td>
                 <Link to={'/project/' + value.project_id}>

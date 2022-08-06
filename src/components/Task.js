@@ -11,12 +11,12 @@ import ja from "date-fns/locale/ja";
 import moment from "moment";
 
 registerLocale("ja", ja)
-const Task = () => {
-  const params = useParams();
-  let projectId = 0;
-  if ( params.projectId ) {
-    projectId = params.projectId;
-  }
+const Task = ({projectId}) => {
+  // const params = useParams();
+  // if ( params.projectId ) {
+  //   projectId = params.projectId;
+  // }
+  // alert(projectId);
 
   // タスクに追加する画像リスト
 
@@ -139,6 +139,7 @@ const Task = () => {
       console.log("temp --->", temp);
       return temp;
     })
+    setStartDate(date)
   }
   // タスク終了予定日情報の更新
   const updateEndDate = (date) => {
@@ -149,18 +150,23 @@ const Task = () => {
       console.log("temp --->", temp);
       return temp;
     })
+    setEndDate(date);
   }
   return (
     <React.Fragment>
-      <ProjectDetail projectId={projectId}></ProjectDetail>
+      {/*<ProjectDetail projectId={projectId}></ProjectDetail>*/}
       <section style={sectionStyle}>
+        <div style={taskInputStyle}>
+          <p>プロジェクトID</p>
+          <input className="form-control" type="text" readOnly="readOnly" name="project_id" onInput={onInput} defaultValue={task.project_id}></input>
+        </div>
         <div style={taskInputStyle}>
           <p>タスク名</p>
           <input className="form-control" type="text" name="task_name" onInput={onInput} defaultValue={task.task_name}></input>
         </div>
         <div style={taskInputStyle}>
           <p>タスク概要</p>
-          <input className="form-control" type="text" name="task_description" onChange={onInput} defaultValue={task.task_description}></input>
+          <textarea className="form-control" name="task_description" onChange={onInput} defaultValue={task.task_description}></textarea>
         </div>
         <div style={taskInputStyle}>
           <p>優先順位</p>
