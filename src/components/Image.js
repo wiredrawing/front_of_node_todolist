@@ -25,10 +25,10 @@ const Image = ({callback}) => {
   }
   return (
     <React.Fragment>
-      <div className="row ">
+      <div className="file-uploader-unit">
         <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
           <p>添付ファイルを付与</p>
-          <p><input type="file" onChange={selectFile} className="form-control" name="upload_file" id="upload_file"/></p>
+          <p><input type="file" onChange={selectFile} className="form-control" name="upload_file" id="upload_file" value="" /></p>
         </div>
       </div>
     </React.Fragment>

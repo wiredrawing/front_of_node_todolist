@@ -48,7 +48,7 @@ const TaskDetail = () => {
         <div id="task-images-wrapper" style={taskImagesWrapper}>
           {task.TaskImages && task.TaskImages.map((value, index) => {
             return (
-              <div className="task-image-unit-box" style={taskImageUnitBox}>
+              <div className="common-image-wrapper task-image-unit-box" style={taskImageUnitBox} key={value.image_id}>
                 <p><img className="ajust" width="100%" src={API_TO_SHOW_IMAGE + "/" + value.image_id}/></p>
               </div>
             )

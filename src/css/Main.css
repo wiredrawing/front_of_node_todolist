@@ -29,3 +29,15 @@ img.ajust {
     height: auto;
     margin: 5%;
 }
+
+.common-image-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.common-button-style {
+    border: 1px solid #DEDEDE;
+    padding: 5%;
+    border-radius: 5px;
+    margin: auto;
+}

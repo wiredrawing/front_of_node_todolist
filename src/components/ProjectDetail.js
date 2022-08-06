@@ -57,7 +57,9 @@ const ProjectDetail = ({ projectId }) => {
         <div id="project-images-wrapper">
           {project.ProjectImages && project.ProjectImages.map((value, index) => {
             return (
-              <img className="ajust" alt={value.image_id} src={API_TO_SHOW_IMAGE + "/" + value.image_id}/>
+              <div key={value.image_id}>
+                <img className="ajust" alt={value.image_id} src={API_TO_SHOW_IMAGE + "/" + value.image_id}/>
+              </div>
             )
           })}
         </div>

@@ -4,13 +4,21 @@ import axios from 'axios'
 import ProjectDetail from './ProjectDetail'
 import Image from './Image'
 import config from '../config/const'
+// date picker
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import ja from "date-fns/locale/ja";
+import moment from "moment";
 
+registerLocale("ja", ja)
 const Task = () => {
   const params = useParams();
   let projectId = 0;
   if ( params.projectId ) {
     projectId = params.projectId;
   }
+  const [ startDate, setStartDate ] = useState(new Date());
+  const [ endDate, setEndDate ] = useState(new Date());
   // タスクに追加する画像リスト
   const [ taskImages, setTaskImages ] = useState([]);
   const completedUploadingImage = (imageId) => {
@@ -29,11 +37,17 @@ const Task = () => {
   }
   const taskInputStyle = {
     width: "20%",
+    // marginLeft: "5%",
+    // marginRight: "5%",
+    marginTop: "2%",
+    margin: "auto",
   }
   // 作業中のプロジェクト情報を取得する
   const API_TO_FETCH_PROJECT_INFO = config.development.host + "/api/project/detail/" + projectId
   const API_TO_ADD_NEW_TASK = config.development.host + "/api/task/create/"
   const API_TO_SHOW_IMAGE = config.development.host + "/api/image/show";
+  const API_TO_FETCH_UTILITY = config.development.host + "/api/utility";
+  const [ utility, setUtility ] = React.useState({})
   const [ task, setTask ] = React.useState({
     unique_key: "",
     task_name: "",
@@ -80,8 +94,19 @@ const Task = () => {
     })
     return true;
   }
-
+  // 設定データを取得
+  const fetchUtilityList = async () => {
+    let temp = await axios.get(API_TO_FETCH_UTILITY);
+    if ( temp !== null ) {
+      setUtility(temp.data.response);
+      console.log("utility---->", temp)
+      console.log(utility);
+      return utility;
+    }
+    return null;
+  };
   React.useEffect(() => {
+    fetchUtilityList();
     (async () => {
       // コンポーネント初回表示時に作業中のプロジェクト情報を取得する
       let project = await axios.get(API_TO_FETCH_PROJECT_INFO, {}).then((result) => {
@@ -103,44 +128,78 @@ const Task = () => {
 
   }, []);
 
+  // タスク開始予定日情報の更新
+  const updateStartDate = (date) => {
+    console.log("date -----> ", date);
+    setTask((previous) => {
+      let temp = Object.assign({}, previous);
+      temp.start_date = moment(date).format("yyyy-MM-DD")
+      console.log("temp --->", temp);
+      return temp;
+    })
+  }
+  // タスク終了予定日情報の更新
+  const updateEndDate = (date) => {
+    console.log("date -----> ", date);
+    setTask((previous) => {
+      let temp = Object.assign({}, previous);
+      temp.end_date = moment(date).format("yyyy-MM-DD")
+      console.log("temp --->", temp);
+      return temp;
+    })
+  }
   return (
     <React.Fragment>
       <ProjectDetail projectId={projectId}></ProjectDetail>
       <section style={sectionStyle}>
         <div style={taskInputStyle}>
-          <p>プロジェクトID</p>
-          <input type="text" name="project_id" onChange={onInput} defaultValue={projectId}></input>
-        </div>
-        <div style={taskInputStyle}>
           <p>タスク名</p>
-          <input type="text" name="task_name" onInput={onInput} defaultValue={task.task_name}></input>
+          <input className="form-control" type="text" name="task_name" onInput={onInput} defaultValue={task.task_name}></input>
         </div>
         <div style={taskInputStyle}>
           <p>タスク概要</p>
-          <input type="text" name="task_description" onChange={onInput} defaultValue={task.task_description}></input>
+          <input className="form-control" type="text" name="task_description" onChange={onInput} defaultValue={task.task_description}></input>
         </div>
         <div style={taskInputStyle}>
           <p>優先順位</p>
-          <input type="text" name="priority" onChange={onInput} defaultValue={task.priority}></input>
+          <select className="form-select" name="priority" onChange={onInput}>
+            {utility.priority && utility.priority.map((value, index) => {
+              return (
+                <React.Fragment key={value.id}>
+                  <option value={value.id}>{value.value}</option>
+                </React.Fragment>
+              )
+            })}
+          </select>
         </div>
         <div style={taskInputStyle}>
           <p>ステータス</p>
-          <input type="text" name="status" onChange={onInput} defaultValue={task.status}></input>
-        </div>
-        <div style={taskInputStyle}>
-          <p>タスクコード</p>
-          <input type="text" name="code_number" onChange={onInput} defaultValue={task.code_number}></input>
+          <select className="form-select" name="status" onChange={onInput}>
+            {utility.status && utility.status.map((value, index) => {
+              return (
+                <React.Fragment key={value.id}>
+                  <option value={value.id}>{value.value}</option>
+                </React.Fragment>
+              )
+            })}
+          </select>
         </div>
         <div style={taskInputStyle}>
           <p>タスク開始予定日</p>
-          <input type="text" name="start_date" onChange={onInput} defaultValue={task.start_date}></input>
+          <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={startDate} onChange={updateStartDate}/>
+          {/*<DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={startDate} onChange={(date) => setStartDate(date)} />*/}
+          <input className="form-select" type="text" name="start_date" onChange={onInput} defaultValue={task.start_date}></input>
         </div>
         <div style={taskInputStyle}>
           <p>タスク終了予定日</p>
-          <input type="text" name="end_date" onChange={onInput} defaultValue={task.end_date}></input>
+          <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={endDate} onChange={updateEndDate}/>
+          {/*<DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={endDate} onChange={(date) => setEndDate(date)} />*/}
+          <input className="form-select" type="text" name="end_date" onChange={onInput} defaultValue={task.end_date}></input>
         </div>
+      </section>
+      <section>
         <div style={taskInputStyle}>
-          <button id="add-task-button" onClick={addTaskInfo}>
+          <button id="add-task-button" className="common-button-style" onClick={addTaskInfo}>
             上記内容でタスクを登録する
           </button>
         </div>

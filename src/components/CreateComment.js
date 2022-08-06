@@ -82,7 +82,7 @@ const CreateComment = ({
           {imageIdList.map((value, index) => {
             return (
               <div className="images-to-be-uploaed" key={value}>
-                <img onClick={deleteThisImage(index)} alt={value} width="20%" className="ajust" src={API_TO_SHOW_IMAGE + "/" + value}/>
+                <img onDoubleClick={deleteThisImage(index)} alt={value} width="20%" className="ajust" src={API_TO_SHOW_IMAGE + "/" + value}/>
               </div>
             )
           })}
