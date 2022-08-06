@@ -17,10 +17,9 @@ const Task = () => {
   if ( params.projectId ) {
     projectId = params.projectId;
   }
-  const [ startDate, setStartDate ] = useState(new Date());
-  const [ endDate, setEndDate ] = useState(new Date());
+
   // タスクに追加する画像リスト
-  const [ taskImages, setTaskImages ] = useState([]);
+
   const completedUploadingImage = (imageId) => {
     setTaskImages((previous) => {
       let temp = previous.slice();
@@ -47,8 +46,11 @@ const Task = () => {
   const API_TO_ADD_NEW_TASK = config.development.host + "/api/task/create/"
   const API_TO_SHOW_IMAGE = config.development.host + "/api/image/show";
   const API_TO_FETCH_UTILITY = config.development.host + "/api/utility";
-  const [ utility, setUtility ] = React.useState({})
-  const [ task, setTask ] = React.useState({
+  const [ taskImages, setTaskImages ] = useState([]);
+  const [ utility, setUtility ] = useState({})
+  const [ startDate, setStartDate ] = useState(new Date());
+  const [ endDate, setEndDate ] = useState(new Date());
+  const [ task, setTask ] = useState({
     unique_key: "",
     task_name: "",
     task_description: "",
@@ -82,7 +84,7 @@ const Task = () => {
       }
       return false;
     }).catch((error) => {
-
+      console.log("error ---->", error);
     })
   }
   // 入力イベントの度に親コンポーネントにデータを共有する
@@ -113,13 +115,13 @@ const Task = () => {
         console.log(result);
         if ( result.data.status ) {
           console.log("API通信成功");
-          let temp = Object.assign(null, result.data.response)
+          let temp = Object.assign({ }, result.data.response)
           console.log(result.data.response);
           // setProject(result.data.response);
           console.log("project --->", project);
         }
       }).catch((error) => {
-
+        console.log("error ---> ", error);
       })
       console.log(project);
     })();
@@ -187,14 +189,10 @@ const Task = () => {
         <div style={taskInputStyle}>
           <p>タスク開始予定日</p>
           <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={startDate} onChange={updateStartDate}/>
-          {/*<DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={startDate} onChange={(date) => setStartDate(date)} />*/}
-          <input className="form-select" type="text" name="start_date" onChange={onInput} defaultValue={task.start_date}></input>
         </div>
         <div style={taskInputStyle}>
           <p>タスク終了予定日</p>
           <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={endDate} onChange={updateEndDate}/>
-          {/*<DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={endDate} onChange={(date) => setEndDate(date)} />*/}
-          <input className="form-select" type="text" name="end_date" onChange={onInput} defaultValue={task.end_date}></input>
         </div>
       </section>
       <section>
@@ -207,7 +205,7 @@ const Task = () => {
       <div id="task-images">
         {taskImages.map((value, index) => {
           return (
-            <img width="15%" src={API_TO_SHOW_IMAGE + "/" + value}/>
+            <img alt={value} width="15%" src={API_TO_SHOW_IMAGE + "/" + value}/>
           )
         })}
       </div>

@@ -15,6 +15,7 @@ import UploadImage from './components/UploadImage'
 import ImageList from './components/ImageList'
 import axios from 'axios'
 import TaskComment from './components/TaskComment'
+import CreateTask from './components/CreateTask'
 
 function App() {
 
@@ -78,6 +79,9 @@ function App() {
                     <Route path=":id" element={<TaskDetail/>}></Route>
                     <Route path=":projctId" element={<TaskList/>}></Route>
                     <Route path="" element={<TaskList/>}></Route>
+                  </Route>
+                  <Route path="/create/task/:projectId">
+                    <Route path="" element={<CreateTask/>}></Route>
                   </Route>
 
                   <Route path="/userList/">

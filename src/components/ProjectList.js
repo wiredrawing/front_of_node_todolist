@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import axios from 'axios'
 import { Link, Outlet, useParams, useNavigate } from 'react-router-dom'
 import config from "../config/const";
+import moment from 'moment'
 
 const ProjectLit = function() {
 
@@ -65,14 +66,14 @@ const ProjectLit = function() {
                   <p>{value.project_description}</p>
                 </td>
                 <td>
-                  <p>{value.start_date}</p>
-                  <p>{value.end_date}</p>
+                  <p>{moment(value.start_date).format("yyyy年MM月DD日")}</p>
+                  <p>{moment(value.end_date).format("yyyy年MM月DD日")}</p>
                 </td>
                 <td>
                   <p><Link to={'/project/' + value.id}>プロジェクト詳細へ</Link></p>
                 </td>
                 <td>
-                  <p><Link to={'/task/create/' + value.id}>このプロジェクトにタスクを追加</Link></p>
+                  <p><Link to={'/create/task/' + value.id}>このプロジェクトにタスクを追加</Link></p>
                 </td>
                 <td>
                   <button onClick={moveToTaskList(value.id)} className="btn btn-outline-info button-to-task-list-page">登録ずみタスク一覧へ</button>

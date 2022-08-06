@@ -2,13 +2,19 @@ import React, { useState } from 'react'
 import axios from 'axios'
 import Image from './Image'
 import config from '../config/const'
+// date picker
+import DatePicker, { registerLocale } from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import ja from "date-fns/locale/ja";
+import moment from "moment";
 
 const CreateProject = () => {
 
   const apiEndPoint = "http://localhost:3000/api/project/create";
   const apiToShowImage = config.development.host + "/api/image/show";
   const [ projectImages, setProjectImages ] = useState([]);
-
+  const [ startDate, setStartDate ] = useState(new Date());
+  const [ endDate, setEndDate ] = useState(new Date());
   const completedUploadingImage = (imageId) => {
     setProjectImages((previous) => {
       let temp = previous.slice();
@@ -65,6 +71,22 @@ const CreateProject = () => {
     margin: "3%",
   }
 
+  // プロジェクト開始予定日の更新
+  const updateStartDate = (date) => {
+    setProject((previous) => {
+      let temp = Object.assign({}, previous);
+      temp.start_date = moment(date).format("yyyy-MM-DD");
+      return temp;
+    })
+  }
+  // プロジェクト終了予定日の更新
+  const updateEndDate = (date) => {
+    setProject((previous) => {
+      let temp = Object.assign({}, previous);
+      temp.end_date = moment(date).format("yyyy-MM-DD");
+      return temp;
+    })
+  }
   return (
     <React.Fragment>
       <section style={addNewProjectWrapper}>
@@ -87,10 +109,12 @@ const CreateProject = () => {
         </div>
         <div className="add-new-project-unit" style={addNewProjectUnit}>
           <p>プロジェクト開始予定日</p>
+          <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={startDate} onChange={updateStartDate}/>
           <input onInput={(e) => updateProject(e)} type="text" name="start_date" defaultValue={project.start_date}></input>
         </div>
         <div className="add-new-project-unit" style={addNewProjectUnit}>
           <p>プロジェクト終了予定日</p>
+          <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={endDate} onChange={updateEndDate}/>
           <input onInput={(e) => updateProject(e)} type="text" name="end_date" defaultValue={project.end_date}></input>
         </div>
       </section>
