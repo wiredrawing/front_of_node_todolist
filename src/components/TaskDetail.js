@@ -43,6 +43,7 @@ const TaskDetail = () => {
         {task.id}
         {task.task_name}
         {task.task_description}
+        ☆:{task.Stars && task.Stars.length}
         <p>本タスク添付画像一覧</p>
         <div id="task-images-wrapper" style={taskImagesWrapper}>
           {task.TaskImages && task.TaskImages.map((value, index) => {

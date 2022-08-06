@@ -38,6 +38,7 @@ const ProjectTaskList = ({ projectId }) => {
             <td>タスク名</td>
             <td>タスク概要</td>
             <td>タスクコード</td>
+            <td>スター</td>
             <td>開始予定日<br/>終了予定日</td>
             <td>担当者ID</td>
             <td>タスク詳細へ</td>
@@ -51,6 +52,7 @@ const ProjectTaskList = ({ projectId }) => {
               <td>{value.task_name}</td>
               <td>{value.task_description}</td>
               <td>{value.code_number}</td>
+              <td>{value.Stars && value.Stars.length}</td>
               <td>{value.start_date}<br/>{value.end_date}</td>
               <td>{value.user_id}</td>
               <td><button onClick={moveToTaskDetail(value.id)} className="btn btn-outline-info button-to-task-list-page ">タスク詳細へ</button></td>
