@@ -40,7 +40,7 @@ const TaskComment = ({
     <React.Fragment>
       {taskComments !== null && taskComments.map((value) => {
         return (
-          <section className="task-comment-unit-box" style={commentUnitBox}>
+          <section className="task-comment-unit-box" style={commentUnitBox} key={value.id}>
             <p>{value.id}</p>
             <p>{value.comment.split("\n").map((value) => {
               return (

@@ -11,15 +11,8 @@ import ja from "date-fns/locale/ja";
 import moment from "moment";
 
 registerLocale("ja", ja)
-const Task = ({projectId}) => {
-  // const params = useParams();
-  // if ( params.projectId ) {
-  //   projectId = params.projectId;
-  // }
-  // alert(projectId);
-
+const Task = ({ projectId }) => {
   // タスクに追加する画像リスト
-
   const completedUploadingImage = (imageId) => {
     setTaskImages((previous) => {
       let temp = previous.slice();
@@ -54,8 +47,10 @@ const Task = ({projectId}) => {
     unique_key: "",
     task_name: "",
     task_description: "",
-    start_date: "",
-    end_date: "",
+    // stateの初期値を利用
+    start_date: moment(startDate).format("yyyy-MM-DD"),
+    // stateの初期値を利用
+    end_date: moment(endDate).format("yyyy-MM-DD"),
     priority: "",
     status: "",
     // code_number: "",
@@ -115,7 +110,7 @@ const Task = ({projectId}) => {
         console.log(result);
         if ( result.data.status ) {
           console.log("API通信成功");
-          let temp = Object.assign({ }, result.data.response)
+          let temp = Object.assign({}, result.data.response)
           console.log(result.data.response);
           // setProject(result.data.response);
           console.log("project --->", project);

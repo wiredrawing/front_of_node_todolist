@@ -45,7 +45,8 @@ const ProjectLit = function() {
           </td>
           <td>プロジェクト概要</td>
           <td>開始予定日<br/>終了予定日</td>
-          <td>プロジェクト詳細へ</td>
+          <td>詳細</td>
+          <td>編集</td>
           <td>タスクの追加</td>
           <td>タスク一覧へ</td>
         </tr>
@@ -70,7 +71,10 @@ const ProjectLit = function() {
                   <p>{moment(value.end_date).format("yyyy年MM月DD日")}</p>
                 </td>
                 <td>
-                  <p><Link to={'/project/' + value.id}>プロジェクト詳細へ</Link></p>
+                  <p className="btn btn-outline-primary"><Link to={'/project/' + value.id}>詳細</Link></p>
+                </td>
+                <td>
+                  <p className="btn btn-outline-primary"><Link to={'/project/update/' + value.id}>編集</Link></p>
                 </td>
                 <td>
                   <p><Link to={'/create/task/' + value.id}>このプロジェクトにタスクを追加</Link></p>

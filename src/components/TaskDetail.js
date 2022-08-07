@@ -56,7 +56,6 @@ const TaskDetail = () => {
           })}
         </div>
         <CreateComment taskId={id} callback={completedAddNewComment}/>
-        <hr/>
         <TaskComment taskId={id} newCommentid={newCommentId}/>
       </section>
     </React.Fragment>
