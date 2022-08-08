@@ -18,6 +18,7 @@ import { useNavigate } from 'react-router-dom'
 const Project = ({ projectId }) => {
 
   const apiEndPoint = config.development.host + "/api/project/create";
+  const API_TO_UPDATE_PROJECT = config.development.host + "/api/project/update"
   const apiToShowImage = config.development.host + "/api/image/show";
   const API_TO_FETCH_PROJECT = config.development.host + "/api/project/detail"
   const [ projectImages, setProjectImages ] = useState([]);
@@ -53,7 +54,7 @@ const Project = ({ projectId }) => {
   // Request registering new project to api server.
   let navigate = useNavigate();
   const registerNewProject = () => {
-    let newProject = Object.assign(project);
+    let newProject = Object.assign({}, project);
     // プロジェクト用画像を設定
     newProject.image_id = projectImages;
     console.log(newProject);
@@ -119,6 +120,15 @@ const Project = ({ projectId }) => {
       console.log(result);
       if ( result.data.status ) {
         let tempProject = result.data.response
+        // project画像が登録されている場合
+        let temp = [];
+        if ( tempProject.ProjectImages ) {
+          tempProject.ProjectImages.forEach((value) => {
+            temp.push(value.image_id);
+          })
+          setProjectImages(temp)
+          console.log("projectImages ------->" , projectImages);
+        }
         setProject((previous) => {
           return {
             project_name: tempProject.project_name,
@@ -128,24 +138,39 @@ const Project = ({ projectId }) => {
             is_displayed: tempProject.is_displayed,
             user_id: tempProject.user_id,
             code_number: tempProject.code_number,
-            image_id: [],
+            image_id: temp,
           }
         });
         // datePickerの値も更新
         setStartDate(new Date(tempProject.start_date));
         setEndDate(new Date(tempProject.end_date));
-        // project画像が登録されている場合
-        if ( result.data.response.ProjectImages ) {
-          setProjectImages((previous) => {
-            let temp = [];
-            result.data.response.ProjectImages.forEach((value) => {
-              temp.push(value.image_id);
-            })
-            return temp;
-          })
-        }
       }
     })
+    return true;
+  }
+  // サーバー上のリソースをアップデート
+  const updateProjectOnRemote = () => {
+    let updateData = Object.assign({}, project);
+    // project更新向けにペイロードを修正
+    updateData.project_id = projectId;
+    updateData.created_by = updateData.user_id;
+    updateData.image_id = projectImages;
+    axios.post(API_TO_UPDATE_PROJECT + "/" + projectId, updateData).then((result) => {
+      console.log(result);
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
+
+  // 送信ボタンのonClickイベント
+  const executeProject = (event) => {
+    if (projectId > 0) {
+      // 既存リソースの作成処理
+      updateProjectOnRemote();
+      return true;
+    }
+    // 新規プロジェクト作成処理
+    registerNewProject()
     return true;
   }
   useEffect(() => {
@@ -214,7 +239,7 @@ const Project = ({ projectId }) => {
         <div>
           <p>プロジェクト登録ボタン</p>
           <p>
-            <button className="common-button-style" onClick={registerNewProject}>上記内容で新規登録</button>
+            <button className="common-button-style" onClick={executeProject}>上記内容で新規登録</button>
           </p>
         </div>
       </section>
