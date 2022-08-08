@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import ProjectDetail from './ProjectDetail'
 import Image from './Image'
 import config from '../config/const'
 // date picker
@@ -11,7 +10,11 @@ import ja from "date-fns/locale/ja";
 import moment from "moment";
 
 registerLocale("ja", ja)
-const Task = ({ projectId }) => {
+
+const Task = ({
+                projectId,
+                taskId
+              }) => {
   // タスクに追加する画像リスト
   const completedUploadingImage = (imageId) => {
     setTaskImages((previous) => {
@@ -36,9 +39,12 @@ const Task = ({ projectId }) => {
   }
   // 作業中のプロジェクト情報を取得する
   const API_TO_FETCH_PROJECT_INFO = config.development.host + "/api/project/detail/" + projectId
-  const API_TO_ADD_NEW_TASK = config.development.host + "/api/task/create/"
+  const API_TO_ADD_NEW_TASK = config.development.host + "/api/task/create"
+  const API_TO_UPDATE_TASK = config.development.host + "/api/task/update";
   const API_TO_SHOW_IMAGE = config.development.host + "/api/image/show";
   const API_TO_FETCH_UTILITY = config.development.host + "/api/utility";
+  const API_TO_FETCH_TASK = config.development.host + "/api/task";
+  const [ project, setProject ] = useState({});
   const [ taskImages, setTaskImages ] = useState([]);
   const [ utility, setUtility ] = useState({})
   const [ startDate, setStartDate ] = useState(new Date());
@@ -59,29 +65,59 @@ const Task = ({ projectId }) => {
     project_id: projectId,
   });
 
-  // 新規タスク情報登録ボタン押下時
-  let navigate = useNavigate();
-  const addTaskInfo = (e) => {
-    setTask((previous) => {
-      let temp = Object.assign({}, previous);
-      temp.project_id = projectId
-      return temp;
-    })
-    let postData = Object.assign({}, task);
-    // タスク用画像を追加
-    postData.image_id = taskImages;
-    axios.post(API_TO_ADD_NEW_TASK, postData).then((result) => {
-      console.log(result);
-      if ( result.data.status ) {
-        // 新規タスクの登録に完了したら当該プロジェクトのタスク一覧へ遷移させる
-        navigate("/project/task/" + projectId);
-        return true;
+
+  /**
+   * 新規タスク情報のリソース作成あるいは既存リソースの更新
+   */
+  const navigate = useNavigate();
+  const executeTaskInfo = (e) => {
+    // taskIdが指定されている場合
+    if (taskId > 0) {
+      let postData = {
+        task_id: taskId,
+        task_name: task.task_name,
+        task_description: task.task_description,
+        // stateの初期値を利用
+        start_date: moment(startDate).format("yyyy-MM-DD"),
+        // stateの初期値を利用
+        end_date: moment(endDate).format("yyyy-MM-DD"),
+        priority: task.priority,
+        status: task.status,
+        user_id: task.user_id,
+        image_id: taskImages,
+        project_id: projectId,
+        is_displayed: task.is_displayed,
       }
-      return false;
-    }).catch((error) => {
-      console.log("error ---->", error);
-    })
+      axios.post(API_TO_UPDATE_TASK + "/" + projectId, postData).then((result) => {
+        console.log("postData ----> ", postData);
+        console.log("API_TO_UPDATE_TASK/projectId ----> ", result);
+        alert("編集が完了しました");
+        return navigate("/task/update/" + projectId + "/" + postData.task_id);
+      }).catch((error) => {
+        console.log("ERROR: API_TO_UPDATE_TASK/projectId ----> ", error);
+      })
+    } else {
+      setTask((previous) => {
+        let temp = Object.assign({}, previous);
+        temp.project_id = projectId
+        return temp;
+      })
+      let postData = Object.assign({}, task);
+      // タスク用画像を追加
+      postData.image_id = taskImages;
+      axios.post(API_TO_ADD_NEW_TASK, postData).then((result) => {
+        console.log(result);
+        if ( result.data.status ) {
+          // 新規タスクの登録に完了したら当該プロジェクトのタスク一覧へ遷移させる
+          return navigate("/project/task/" + projectId);
+        }
+        return false;
+      }).catch((error) => {
+        console.log("error ---->", error);
+      })
+    }
   }
+
   // 入力イベントの度に親コンポーネントにデータを共有する
   const onInput = (event) => {
     setTask((previous) => {
@@ -102,27 +138,65 @@ const Task = ({ projectId }) => {
     }
     return null;
   };
-  React.useEffect(() => {
-    fetchUtilityList();
-    (async () => {
-      // コンポーネント初回表示時に作業中のプロジェクト情報を取得する
-      let project = await axios.get(API_TO_FETCH_PROJECT_INFO, {}).then((result) => {
-        console.log(result);
-        if ( result.data.status ) {
-          console.log("API通信成功");
-          let temp = Object.assign({}, result.data.response)
-          console.log(result.data.response);
-          // setProject(result.data.response);
-          console.log("project --->", project);
+  // タスク編集モード時にタスク情報を取得する
+  const fetchTaskInfoToUpdate = (taskId) => {
+     axios.get(API_TO_FETCH_TASK + "/" + taskId).then((result) => {
+      if (result.data.status) {
+        if (result.data.response.TaskImages) {
+          setTaskImages((prevState) => {
+            let temp = [];
+            result.data.response.TaskImages.forEach((value) => {
+              temp.push(value.image_id);
+            })
+
+            return temp;
+          })
         }
-      }).catch((error) => {
-        console.log("error ---> ", error);
+        setTask((prevState) => {
+          return result.data.response;
+        })
+        // タスク開始日を指定
+        setStartDate(new Date(result.data.response.start_date))
+        // タスク終了日を指定
+        setEndDate(new Date(result.data.response.end_date))
+      }
+    }).catch((error) => {
+      console.log(error);
+    })
+  }
+
+  /**
+   * 指定したprojectIdに紐づくプロジェクト情報を取得する
+   *
+   * @param projectId
+   * @returns {Promise<boolean>}
+   */
+  const fetchProjectInfo = async (projectId) => {
+    // コンポーネント初回表示時に作業中のプロジェクト情報を取得する
+    let result = await axios.get(API_TO_FETCH_PROJECT_INFO, {});
+    if ( result === null ) {
+      return null;
+    }
+    if ( result.data.status ) {
+      setProject((prevState) => {
+        return Object.assign({}, prevState);
       })
-      console.log(project);
-    })();
+      return result.data.response;
+    }
+  }
+  React.useEffect(() => {
+    fetchUtilityList().then((result) => {
+      console.log(result);
+    });
 
-    // 親コンポーネントにTaskコンポーネントのstateの構造を共有する
-
+    if ( taskId > 0 ) {
+      fetchTaskInfoToUpdate(taskId);
+    }
+    if (projectId > 0) {
+      fetchProjectInfo(projectId).then((result) => {
+        console.log("fetchProjectInfo ---> ", result);
+      })
+    }
   }, []);
 
   // タスク開始予定日情報の更新
@@ -146,6 +220,17 @@ const Task = ({ projectId }) => {
       return temp;
     })
     setEndDate(date);
+  }
+
+  // ダブルクリックした画像を削除する
+  const deleteThisImage = (index) => {
+    return (e) => {
+      setTaskImages((prevState) => {
+        let temp = prevState.slice();
+        temp.splice(index, 1);
+        return temp;
+      })
+    }
   }
   return (
     <React.Fragment>
@@ -198,7 +283,7 @@ const Task = ({ projectId }) => {
       </section>
       <section>
         <div style={taskInputStyle}>
-          <button id="add-task-button" className="common-button-style" onClick={addTaskInfo}>
+          <button id="add-task-button" className="common-button-style" onClick={executeTaskInfo}>
             上記内容でタスクを登録する
           </button>
         </div>
@@ -206,7 +291,7 @@ const Task = ({ projectId }) => {
       <div id="task-images">
         {taskImages.map((value, index) => {
           return (
-            <img alt={value} width="15%" src={API_TO_SHOW_IMAGE + "/" + value}/>
+            <img onDoubleClick={deleteThisImage(index)} key={value} alt={value} width="15%" src={API_TO_SHOW_IMAGE + "/" + value}/>
           )
         })}
       </div>

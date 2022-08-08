@@ -17,7 +17,7 @@ import ImageList from './components/ImageList'
 // import TaskComment from './components/TaskComment'
 import CreateTask from './components/CreateTask'
 import UpdateProject from './components/UpdateProject'
-
+import UpdateTask from './components/UpdateTask'
 function App() {
 
 
@@ -72,12 +72,13 @@ function App() {
                   <Route path="/project/">
                     <Route path="" element={<ProjectList/>}></Route>
                     <Route path=":id" element={<ProjectDetail/>}></Route>
-                    <Route path="task/:id" element={<ProjectTaskList projectId="0"/>}></Route>
+                    <Route path="task/:id" element={<ProjectTaskList />}></Route>
                     <Route path="create" element={<CreateProject/>}></Route>
                     <Route path="update/:id" element={<UpdateProject/>}></Route>
                   </Route>
                   <Route path="/task/">
                     <Route path="create/:projectId" element={<Task/>}></Route>
+                    <Route path="update/:projectId/:taskId" element={<UpdateTask/>}></Route>
                     <Route path=":id" element={<TaskDetail/>}></Route>
                     <Route path=":projctId" element={<TaskList/>}></Route>
                     <Route path="" element={<TaskList/>}></Route>

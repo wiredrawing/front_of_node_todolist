@@ -40,6 +40,13 @@ function TaskList() {
       navigate("/task/" + closureNumber)
     }
   }
+  // タスク編集ページへ移動
+  const toTaskUpdate = (projectId, taskId) => {
+    return function (event) {
+      console.log(event);
+      return navigate("/task/update/" + projectId + "/" + taskId);
+    }
+  }
   /**
    * 引数に指定したタスクIDに対してスターを送る
    * @param taskId
@@ -78,7 +85,8 @@ function TaskList() {
             <td>優先順位<br/>作業ステータス</td>
             <td>プロジェクト詳細へ</td>
             <td>タスク開始予定日<br/>タスク終了予定日</td>
-            <td>タスク詳細へ</td>
+            <td>詳細</td>
+            <td>編集</td>
           </tr>
         </thead>
         <tbody>
@@ -114,7 +122,8 @@ function TaskList() {
                 {moment(value.start_date).format("yyyy年MM月DD日")}<br/>
                 {moment(value.end_date).format("yyyy年MM月DD日")}
               </td>
-              <td><button onClick={toTaskDetail(value.id)} className="btn btn-outline-info button-to-task-list-page">タスク詳細へ</button></td>
+              <td><button onClick={toTaskDetail(value.id)} className="btn btn-outline-info button-to-task-list-page">詳細へ</button></td>
+              <td><button onClick={toTaskUpdate(value.project_id, value.id)} className="btn btn-outline-info button-to-task-list-page">編集へ</button></td>
             </tr>
           )
         })}
