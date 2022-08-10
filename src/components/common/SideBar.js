@@ -19,7 +19,7 @@ const SideBar = () => {
                 <Link to="/project/create">新規プロジェクト作成</Link>
               </li>
               <li>
-                <Link to="/user">ユーザー一覧</Link>
+                <Link to="/user/list">ユーザー一覧</Link>
               </li>
               <li>
                 <Link to="/task">タスク一覧</Link>

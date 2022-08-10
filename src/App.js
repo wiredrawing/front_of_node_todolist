@@ -89,7 +89,7 @@ function App() {
                         <Route path="" element={<CreateTask/>}></Route>
                       </Route>
 
-                      <Route path="/userList/">
+                      <Route path="/user/list/">
                         <Route path="" element={<UserList/>}></Route>
                       </Route>
 

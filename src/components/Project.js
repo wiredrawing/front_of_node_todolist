@@ -22,6 +22,8 @@ const Project = ({ projectId }) => {
   const apiToShowImage = config.development.host + "/api/image/show";
   const API_TO_FETCH_PROJECT = config.development.host + "/api/project/detail"
   const API_TO_FETCH_UTILITY = config.development.host + "/api/utility";
+  const API_TO_FETCH_USERS = config.development.host + "/api/user";
+  const [ users, setUsers ] = useState([]);
   const [ projectImages, setProjectImages ] = useState([]);
   const [ startDate, setStartDate ] = useState(new Date());
   const [ endDate, setEndDate ] = useState(new Date());
@@ -45,13 +47,16 @@ const Project = ({ projectId }) => {
       return temp;
     })
   }
-  const updateProject = (e) => {
-    console.log(e);
-    let targetKey = e.target.name;
-    setProject((previous) => {
-      previous[targetKey] = e.target.value;
-      return Object.assign({}, previous);
-    });
+  const updateProject = (index) => {
+    return (e) => {
+      console.log(e);
+      console.log("FormNumber index ----->", index);
+      let targetKey = e.target.name;
+      setProject((previous) => {
+        previous[targetKey] = e.target.value;
+        return Object.assign({}, previous);
+      });
+    }
   }
 
   // Request registering new project to api server.
@@ -176,6 +181,16 @@ const Project = ({ projectId }) => {
     registerNewProject()
     return true;
   }
+
+  // 全ユーザー情報を取得する
+  useEffect(() => {
+    axios.get(API_TO_FETCH_USERS).then((result) => {
+      if ( result.data.status ) {
+        setUsers(result.data.response);
+      }
+    })
+  }, []);
+
   // ユーティリティ情報を取得する
   useEffect(() => {
     console.log("-----------------> useEffect 1")
@@ -197,80 +212,97 @@ const Project = ({ projectId }) => {
   }, [])
   return (
     <React.Fragment>
-      <section style={addNewProjectWrapper}>
-        <div id="to-register-project-with-images">
-          {projectImages.map((value, index) => {
-            return (
-              <div className="selected-image-unit" key={value} onDoubleClick={deleteThisImage(index)}>
-                <img alt={value} width="10%" src={apiToShowImage + "/" + value}/>
+      <div className="col-xs-12 col-sm-12 col-md-10 ">
+        <div className="content-box-large ">
+          <div className="panel-title ">プロジェクトの作成</div>
+          <div className="row">
+            <div className="row">
+              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <p>プロジェクト名</p>
+                <input className="form-control" onInput={updateProject("project_name")} type="text" name="project_name" defaultValue={project.project_name}></input>
               </div>
-            )
-          })}
+            </div>
+
+            <div className="row">
+              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <p>開始日時</p>
+                <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={startDate} onChange={updateStartDate}/>
+              </div>
+
+              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <p>終了日時</p>
+                <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={endDate} onChange={updateEndDate}/>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <p>責任者ID</p>
+                <p>
+                  <select className="form-control form-select" name="user_id" id="user_id" onChange={updateProject("user_id")}>
+                    {users && users.map((value, index) => {
+                      return (<option value={value.id}>{value.user_name}</option>);
+                    })}
+                  </select>
+                </p>
+              </div>
+
+              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <p>表示状態の指定</p>
+                <select className="form-select" name="is_displayed" onChange={updateProject("is_displayed")} value={project.is_displayed} defaultValue={project.is_displayed}>
+                  {utility["displayTypes"] && utility["displayTypes"].map((value, index) => {
+                    return (
+                      <React.Fragment key={index}>
+                        <option value={value.id}>{value.value}</option>
+                      </React.Fragment>
+                    )
+                  })}
+                </select>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <p>プロジェクト参画ユーザーID(※ここで追加したユーザーのみプロジェクト情報を閲覧できます)</p>
+                <select name="users" className="form-control form-select" id="select-project-users" onChange={updateProject("users")}>
+                  {users && users.map((value, index) => {
+                    return (<option value={value.id}>{value.user_name}</option>);
+                  })}
+                </select>
+              </div>
+              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <div className="row" id="project-users">
+                </div>
+              </div>
+            </div>
+
+            <div id="to-register-project-with-images">
+              {projectImages.map((value, index) => {
+                return (
+                  <div className="selected-image-unit" key={value} onDoubleClick={deleteThisImage(index)}>
+                    <img alt={value} width="10%" src={apiToShowImage + "/" + value}/>
+                  </div>
+                )
+              })}
+            </div>
+            {/*ファイルアップロード用コンポーネント*/}
+            <Image callback={completedUploadingImage}></Image>
+            <div className="row ">
+              <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 ">
+                <p>プロジェクト詳細</p>
+                <textarea className="form-control" onInput={updateProject("project_description")} name="project_description" defaultValue={project.project_description} rows="10"/>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 ">
+                <p>上記内容でタスクを作成する</p>
+                <button className="common-button-style" onClick={executeProject}>上記内容で新規登録</button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="add-new-project-unit" style={addNewProjectUnit}>
-          <p>プロジェクト名</p>
-          <input className="form-control" onInput={(e) => updateProject(e)} type="text" name="project_name" defaultValue={project.project_name}></input>
-        </div>
-        <div className="add-new-project-unit" style={addNewProjectUnit}>
-          <p>プロジェクト概要</p>
-          <textarea className="form-control" onInput={(e) => updateProject(e)} name="project_description" defaultValue={project.project_description}/>
-        </div>
-        <div className="add-new-project-unit" style={addNewProjectUnit}>
-          <p>表示状態</p>
-          <select className="form-select" name="is_displayed" onChange={(e) => updateProject(e)} value={project.is_displayed} defaultValue={project.is_displayed}>
-            {utility["displayTypes"] && utility["displayTypes"].map((value, index) => {
-              return (
-                <React.Fragment key={index}>
-                  <option value={value.id}>{value.value}</option>
-                </React.Fragment>
-              )
-            })}
-          </select>
-        </div>
-        <div className="add-new-project-unit" style={addNewProjectUnit}>
-          <p>プロジェクト開始予定日</p>
-          <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={startDate} onChange={updateStartDate}/>
-          <input onInput={(e) => updateProject(e)} type="text" name="start_date" defaultValue={project.start_date}></input>
-        </div>
-        <div className="add-new-project-unit" style={addNewProjectUnit}>
-          <p>プロジェクト終了予定日</p>
-          <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={endDate} onChange={updateEndDate}/>
-          <input onInput={(e) => updateProject(e)} type="text" name="end_date" defaultValue={project.end_date}></input>
-        </div>
-      </section>
-      <section id="error">
-        {taskError.map((value, index) => {
-          return (<div>
-            <p>{value.msg}</p>
-          </div>)
-        })
-        }
-      </section>
-      <section>
-        <div>
-          <p>プロジェクト名</p>
-          <p>{project.project_name}</p>
-        </div>
-        <div>
-          <p>プロジェクト概要</p>
-          <p>{project.project_description}</p>
-        </div>
-        <div>
-          <p>プロジェクト開始予定日</p>
-          <p>{project.start_date}</p>
-        </div>
-        <div>
-          <p>プロジェクト終了予定日</p>
-          <p>{project.end_date}</p>
-        </div>
-        <div>
-          <p>プロジェクト登録ボタン</p>
-          <p>
-            <button className="common-button-style" onClick={executeProject}>上記内容で新規登録</button>
-          </p>
-        </div>
-      </section>
-      <Image callback={completedUploadingImage}></Image>
+      </div>
     </React.Fragment>
   );
 }
