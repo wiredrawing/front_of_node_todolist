@@ -18,8 +18,11 @@ import ImageList from './components/ImageList'
 import CreateTask from './components/CreateTask'
 import UpdateProject from './components/UpdateProject'
 import UpdateTask from './components/UpdateTask'
-function App() {
+import Header from './components/common/Header'
+import Footer from './components/common/Footer'
+import SideBar from './components/common/SideBar'
 
+function App() {
 
   // API(corsテスト) => GETの場合
   // useEffect(() => {
@@ -47,68 +50,65 @@ function App() {
 
   return (
     <React.Fragment>
-      <section id="wrapper">
-        <header>
-          <div id="header-top-block">
-            <p>ここはヘッダー</p>
-          </div>
-        </header>
-        <main id="body">
-          <div id="main-block">
-            <BrowserRouter>
-              <div className="App">
-                <section id="global-menus">
-                  <div className="global-menu">
-                    <p><Link to="/project">プロジェクト一覧 http://localhost:3001/project </Link></p>
-                  </div>
-                  <div className="global-menu">
-                    <p><Link to="/project/create">新規プロジェクト作成  http://localhost:3001/project/create </Link></p>
-                  </div>
-                  <div className="global-menu">
-                    <p><Link to="/task">タスク一覧  http://localhost:3001/task/ </Link></p>
-                  </div>
-                </section>
-                <Routes>
-                  <Route path="/project/">
-                    <Route path="" element={<ProjectList/>}></Route>
-                    <Route path=":id" element={<ProjectDetail/>}></Route>
-                    <Route path="task/:id" element={<ProjectTaskList />}></Route>
-                    <Route path="create" element={<CreateProject/>}></Route>
-                    <Route path="update/:id" element={<UpdateProject/>}></Route>
-                  </Route>
-                  <Route path="/task/">
-                    <Route path="create/:projectId" element={<Task/>}></Route>
-                    <Route path="update/:projectId/:taskId" element={<UpdateTask/>}></Route>
-                    <Route path=":id" element={<TaskDetail/>}></Route>
-                    <Route path=":projctId" element={<TaskList/>}></Route>
-                    <Route path="" element={<TaskList/>}></Route>
-                  </Route>
-                  <Route path="/create/task/:projectId">
-                    <Route path="" element={<CreateTask/>}></Route>
-                  </Route>
+      <BrowserRouter>
+        <Header/>
+        <div className="page-content">
+          <div className="row">
+            <SideBar/>
+            <div className="col-md-10" id="app">
+              <section id="wrapper">
+                <div id="main-block">
+                  <div className="App">
+                    <section id="global-menus">
+                      <div className="global-menu">
+                        <p><Link to="/project">プロジェクト一覧 http://localhost:3001/project </Link></p>
+                      </div>
+                      <div className="global-menu">
+                        <p><Link to="/project/create">新規プロジェクト作成 http://localhost:3001/project/create </Link></p>
+                      </div>
+                      <div className="global-menu">
+                        <p><Link to="/task">タスク一覧 http://localhost:3001/task/ </Link></p>
+                      </div>
+                    </section>
+                    <Routes>
+                      <Route path="/project/">
+                        <Route path="" element={<ProjectList/>}></Route>
+                        <Route path=":id" element={<ProjectDetail/>}></Route>
+                        <Route path="task/:id" element={<ProjectTaskList/>}></Route>
+                        <Route path="create" element={<CreateProject/>}></Route>
+                        <Route path="update/:id" element={<UpdateProject/>}></Route>
+                      </Route>
+                      <Route path="/task/">
+                        <Route path="create/:projectId" element={<Task/>}></Route>
+                        <Route path="update/:projectId/:taskId" element={<UpdateTask/>}></Route>
+                        <Route path=":id" element={<TaskDetail/>}></Route>
+                        <Route path=":projctId" element={<TaskList/>}></Route>
+                        <Route path="" element={<TaskList/>}></Route>
+                      </Route>
+                      <Route path="/create/task/:projectId">
+                        <Route path="" element={<CreateTask/>}></Route>
+                      </Route>
 
-                  <Route path="/userList/">
-                    <Route path="" element={<UserList/>}></Route>
-                  </Route>
+                      <Route path="/userList/">
+                        <Route path="" element={<UserList/>}></Route>
+                      </Route>
 
-                  <Route path="/image">
-                    <Route path="upload" element={<UploadImage/>}></Route>
-                    <Route path="list" element={<ImageList/>}></Route>
-                  </Route>
-                  <Route path="/" >
-                    TOP
-                  </Route>
-                </Routes>
-              </div>
-            </BrowserRouter>
+                      <Route path="/image">
+                        <Route path="upload" element={<UploadImage/>}></Route>
+                        <Route path="list" element={<ImageList/>}></Route>
+                      </Route>
+                      <Route path="/">
+                        TOP
+                      </Route>
+                    </Routes>
+                  </div>
+                </div>
+              </section>
+            </div>
           </div>
-        </main>
-        <footer>
-          <div id="footer-top-block">
-            <p>ここはフッター</p>
-          </div>
-        </footer>
-      </section>
+        </div>
+      </BrowserRouter>
+      <Footer></Footer>
     </React.Fragment>
   );
 }

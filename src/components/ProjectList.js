@@ -7,8 +7,18 @@ import moment from 'moment'
 const ProjectLit = function() {
 
   const apiEndPoint = config.development.host + "/api/project/search";
+  const API_TO_FETCH_UTILITY = config.development.host + "/api/utility";
   const [ projectList, setProjectList ] = React.useState([]);
+  const [utility, setUtility] = React.useState({});
+
   console.log("ProjectList ==>", useParams());
+
+  // utility情報を取得する
+  useEffect(() => {
+    axios.get(API_TO_FETCH_UTILITY).then((result) => {
+      console.log(result);
+    })
+  });
 
   useEffect(() => {
     // コンポーネント表示初回のみ
@@ -21,7 +31,6 @@ const ProjectLit = function() {
     }).catch((error) => {
 
     })
-
   }, []);
 
   let naviate = useNavigate();

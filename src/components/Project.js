@@ -21,6 +21,7 @@ const Project = ({ projectId }) => {
   const API_TO_UPDATE_PROJECT = config.development.host + "/api/project/update"
   const apiToShowImage = config.development.host + "/api/image/show";
   const API_TO_FETCH_PROJECT = config.development.host + "/api/project/detail"
+  const API_TO_FETCH_UTILITY = config.development.host + "/api/utility";
   const [ projectImages, setProjectImages ] = useState([]);
   const [ startDate, setStartDate ] = useState(new Date());
   const [ endDate, setEndDate ] = useState(new Date());
@@ -29,12 +30,14 @@ const Project = ({ projectId }) => {
     project_description: "",
     start_date: "",
     end_date: "",
-    is_displayed: "1",
+    is_displayed: 0,
+    is_deleted: 0,
     user_id: "1",
     code_number: "",
     image_id: projectImages,
   });
   const [ taskError, setTaskError ] = React.useState([]);
+  const [ utility, setUtility ] = React.useState({});
   const completedUploadingImage = (imageId) => {
     setProjectImages((previous) => {
       let temp = previous.slice();
@@ -127,7 +130,7 @@ const Project = ({ projectId }) => {
             temp.push(value.image_id);
           })
           setProjectImages(temp)
-          console.log("projectImages ------->" , projectImages);
+          console.log("projectImages ------->", projectImages);
         }
         setProject((previous) => {
           return {
@@ -164,7 +167,7 @@ const Project = ({ projectId }) => {
 
   // 送信ボタンのonClickイベント
   const executeProject = (event) => {
-    if (projectId > 0) {
+    if ( projectId > 0 ) {
       // 既存リソースの作成処理
       updateProjectOnRemote();
       return true;
@@ -173,7 +176,19 @@ const Project = ({ projectId }) => {
     registerNewProject()
     return true;
   }
+  // ユーティリティ情報を取得する
   useEffect(() => {
+    console.log("-----------------> useEffect 1")
+    axios.get(API_TO_FETCH_UTILITY).then((result) => {
+      console.log(result);
+      setUtility(result.data.response);
+    }).catch((error) => {
+      console.log(error);
+    })
+  }, []);
+
+  useEffect(() => {
+    console.log("-----------------> useEffect 2")
     // コンポーネントのプロパティに更新対象のprojectIdが指定されている場合のみ
     console.log(projectId);
     if ( projectId > 0 ) {
@@ -199,6 +214,18 @@ const Project = ({ projectId }) => {
         <div className="add-new-project-unit" style={addNewProjectUnit}>
           <p>プロジェクト概要</p>
           <textarea className="form-control" onInput={(e) => updateProject(e)} name="project_description" defaultValue={project.project_description}/>
+        </div>
+        <div className="add-new-project-unit" style={addNewProjectUnit}>
+          <p>表示状態</p>
+          <select className="form-select" name="is_displayed" onChange={(e) => updateProject(e)} value={project.is_displayed} defaultValue={project.is_displayed}>
+            {utility["displayTypes"] && utility["displayTypes"].map((value, index) => {
+              return (
+                <React.Fragment key={index}>
+                  <option value={value.id}>{value.value}</option>
+                </React.Fragment>
+              )
+            })}
+          </select>
         </div>
         <div className="add-new-project-unit" style={addNewProjectUnit}>
           <p>プロジェクト開始予定日</p>
