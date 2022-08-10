@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import Image from './Image'
@@ -44,6 +44,8 @@ const Task = ({
   const API_TO_SHOW_IMAGE = config.development.host + "/api/image/show";
   const API_TO_FETCH_UTILITY = config.development.host + "/api/utility";
   const API_TO_FETCH_TASK = config.development.host + "/api/task";
+  const API_TO_FETCH_USER = config.development.host + "/api/user";
+  const [users, setUsers] = useState([]);
   const [ project, setProject ] = useState({});
   const [ taskImages, setTaskImages ] = useState([]);
   const [ utility, setUtility ] = useState({})
@@ -65,14 +67,13 @@ const Task = ({
     project_id: projectId,
   });
 
-
   /**
    * 新規タスク情報のリソース作成あるいは既存リソースの更新
    */
   const navigate = useNavigate();
   const executeTaskInfo = (e) => {
     // taskIdが指定されている場合
-    if (taskId > 0) {
+    if ( taskId > 0 ) {
       let postData = {
         task_id: taskId,
         task_name: task.task_name,
@@ -119,13 +120,15 @@ const Task = ({
   }
 
   // 入力イベントの度に親コンポーネントにデータを共有する
-  const onInput = (event) => {
-    setTask((previous) => {
-      let temp = Object.assign({}, previous);
-      temp[event.target.name] = event.target.value;
-      return temp;
-    })
-    return true;
+  const onInput = (nameKey) => {
+    return (event) => {
+      setTask((previous) => {
+        let temp = Object.assign({}, previous);
+        temp[event.target.name] = event.target.value;
+        return temp;
+      })
+      return true;
+    }
   }
   // 設定データを取得
   const fetchUtilityList = async () => {
@@ -140,9 +143,9 @@ const Task = ({
   };
   // タスク編集モード時にタスク情報を取得する
   const fetchTaskInfoToUpdate = (taskId) => {
-     axios.get(API_TO_FETCH_TASK + "/" + taskId).then((result) => {
-      if (result.data.status) {
-        if (result.data.response.TaskImages) {
+    axios.get(API_TO_FETCH_TASK + "/" + taskId).then((result) => {
+      if ( result.data.status ) {
+        if ( result.data.response.TaskImages ) {
           setTaskImages((prevState) => {
             let temp = [];
             result.data.response.TaskImages.forEach((value) => {
@@ -184,15 +187,24 @@ const Task = ({
       return result.data.response;
     }
   }
+
+  // useEffectは複数回実行可能
+  useEffect(() => {
+    axios.get(API_TO_FETCH_USER).then((result) => {
+      if (result.data.status) {
+        setUsers(result.data.response);
+      }
+    })
+  }, [])
+
   React.useEffect(() => {
     fetchUtilityList().then((result) => {
       console.log(result);
     });
-
     if ( taskId > 0 ) {
       fetchTaskInfoToUpdate(taskId);
     }
-    if (projectId > 0) {
+    if ( projectId > 0 ) {
       fetchProjectInfo(projectId).then((result) => {
         console.log("fetchProjectInfo ---> ", result);
       })
@@ -234,68 +246,113 @@ const Task = ({
   }
   return (
     <React.Fragment>
-      {/*<ProjectDetail projectId={projectId}></ProjectDetail>*/}
-      <section style={sectionStyle}>
-        <div style={taskInputStyle}>
-          <p>プロジェクトID</p>
-          <input className="form-control" type="text" readOnly="readOnly" name="project_id" onInput={onInput} defaultValue={task.project_id}></input>
+      <div className="col-xs-12 col-sm-12 col-md-10 ">
+        <div className="content-box-large ">
+          <div className="panel-title ">登録中タスク内容</div>
+          <div className="row " id="app ">
+            <div className="col-xl-12 ">
+              {project.id &&
+              <div className="row ">
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                  <p>紐づくプロジェクトID</p>
+                  <input className="form-control" type="text" readOnly="readOnly" name="project_id" onInput={onInput("project_id")} defaultValue={project.id}></input>
+                </div>
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                  <p>紐づくプロジェクト名</p>
+                  <input className="form-control" type="text" readOnly="readOnly" name="project_name" onInput={onInput("project_id")} defaultValue={project.project_name}></input>
+                </div>
+              </div>
+              }
+              <div className="row ">
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                  <p>タスク名</p>
+                  <input className="form-control" type="text" name="task_name" onInput={onInput("task_name")} defaultValue={task.task_name}></input>
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                  <p>開始日時</p>
+                  <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={startDate} onChange={updateStartDate}/>
+                </div>
+
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                  <p>終了日時</p>
+                  <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={endDate} onChange={updateEndDate}/>
+                </div>
+              </div>
+
+              <div className="row ">
+                <div id="task-images">
+                  {taskImages.map((value, index) => {
+                    return (
+                      <img onDoubleClick={deleteThisImage(index)} key={value} alt={value} width="15%" src={API_TO_SHOW_IMAGE + "/" + value}/>
+                    )
+                  })}
+                </div>
+              </div>
+              <Image callback={completedUploadingImage}/>
+
+              <div className="row ">
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                  <p>作業者ID</p>
+                  <p>
+                    <select className="form-control form-select" name="user_id" id="user_id" onChange={onInput("user_id")}>
+                      {users && users.map((value, index) => {
+                        return(<option key={value.id} value={value.id}>{value.user_name}</option>);
+                      })}
+                    </select>
+                  </p>
+
+
+                </div>
+
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                  <p>タスクステータス</p>
+                  <select className="form-select" name="status" onChange={onInput("status")}>
+                    {utility.status && utility.status.map((value, index) => {
+                      return (
+                        <React.Fragment key={value.id}>
+                          <option value={value.id}>{value.value}</option>
+                        </React.Fragment>
+                      )
+                    })}
+                  </select>
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                  <p>優先度の設定</p>
+                  <select className="form-select" name="priority" onChange={onInput("priority")}>
+                    {utility.priority && utility.priority.map((value, index) => {
+                      return (
+                        <React.Fragment key={value.id}>
+                          <option value={value.id}>{value.value}</option>
+                        </React.Fragment>
+                      )
+                    })}
+                  </select>
+                </div>
+              </div>
+
+              <div className="row">
+                <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                  <p>タスク詳細</p>
+                  <textarea className="form-control" name="task_description" onChange={onInput("task_description")} defaultValue={task.task_description} rows="15"></textarea>
+                </div>
+              </div>
+
+              <div className="row ">
+                <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 ">
+                  <p>上記内容でタスクを作成する</p>
+                  <button id="add-task-button" className="common-button-style" onClick={executeTaskInfo}>タスク登録</button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div style={taskInputStyle}>
-          <p>タスク名</p>
-          <input className="form-control" type="text" name="task_name" onInput={onInput} defaultValue={task.task_name}></input>
-        </div>
-        <div style={taskInputStyle}>
-          <p>タスク概要</p>
-          <textarea className="form-control" name="task_description" onChange={onInput} defaultValue={task.task_description}></textarea>
-        </div>
-        <div style={taskInputStyle}>
-          <p>優先順位</p>
-          <select className="form-select" name="priority" onChange={onInput}>
-            {utility.priority && utility.priority.map((value, index) => {
-              return (
-                <React.Fragment key={value.id}>
-                  <option value={value.id}>{value.value}</option>
-                </React.Fragment>
-              )
-            })}
-          </select>
-        </div>
-        <div style={taskInputStyle}>
-          <p>ステータス</p>
-          <select className="form-select" name="status" onChange={onInput}>
-            {utility.status && utility.status.map((value, index) => {
-              return (
-                <React.Fragment key={value.id}>
-                  <option value={value.id}>{value.value}</option>
-                </React.Fragment>
-              )
-            })}
-          </select>
-        </div>
-        <div style={taskInputStyle}>
-          <p>タスク開始予定日</p>
-          <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={startDate} onChange={updateStartDate}/>
-        </div>
-        <div style={taskInputStyle}>
-          <p>タスク終了予定日</p>
-          <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={endDate} onChange={updateEndDate}/>
-        </div>
-      </section>
-      <section>
-        <div style={taskInputStyle}>
-          <button id="add-task-button" className="common-button-style" onClick={executeTaskInfo}>
-            上記内容でタスクを登録する
-          </button>
-        </div>
-      </section>
-      <div id="task-images">
-        {taskImages.map((value, index) => {
-          return (
-            <img onDoubleClick={deleteThisImage(index)} key={value} alt={value} width="15%" src={API_TO_SHOW_IMAGE + "/" + value}/>
-          )
-        })}
       </div>
-      <Image callback={completedUploadingImage}/>
     </React.Fragment>
   )
 }
