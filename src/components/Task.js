@@ -84,6 +84,7 @@ const Task = ({
         end_date: moment(endDate).format("yyyy-MM-DD"),
         priority: task.priority,
         status: task.status,
+        // タスク作業者(当該タスクを担う人)
         user_id: task.user_id,
         image_id: taskImages,
         project_id: projectId,

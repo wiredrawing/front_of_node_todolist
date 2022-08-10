@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 // import ja from "date-fns/locale/ja";
 import moment from "moment";
 import { useNavigate } from 'react-router-dom'
+import arrayUnique from '../config/array-unique'
 
 /**
  * projectIdがpropsでパスされている場合は編集処理とみなす
@@ -23,6 +24,7 @@ const Project = ({ projectId }) => {
   const API_TO_FETCH_PROJECT = config.development.host + "/api/project/detail"
   const API_TO_FETCH_UTILITY = config.development.host + "/api/utility";
   const API_TO_FETCH_USERS = config.development.host + "/api/user";
+  const [ participants, setParticipants ] = useState([]);
   const [ users, setUsers ] = useState([]);
   const [ projectImages, setProjectImages ] = useState([]);
   const [ startDate, setStartDate ] = useState(new Date());
@@ -37,6 +39,8 @@ const Project = ({ projectId }) => {
     user_id: "1",
     code_number: "",
     image_id: projectImages,
+    // プロジェクト参加者
+    users: participants,
   });
   const [ taskError, setTaskError ] = React.useState([]);
   const [ utility, setUtility ] = React.useState({});
@@ -78,15 +82,6 @@ const Project = ({ projectId }) => {
     }).catch((error) => {
       console.log(error);
     })
-  }
-  const addNewProjectWrapper = {
-    display: "flex",
-    flexWrap: "wrap",
-  }
-  const addNewProjectUnit = {
-    width: "15%",
-    backgroundColor: "#DADADA",
-    margin: "3%",
   }
 
   // プロジェクト開始予定日の更新
@@ -170,6 +165,34 @@ const Project = ({ projectId }) => {
     })
   }
 
+  const updateParticipants = (e) => {
+    const selectedUserId = e.target.value;
+    setParticipants((prevState) => {
+      let temp = prevState.slice();
+      temp.push(selectedUserId);
+      temp = arrayUnique(temp);
+      temp.sort();
+      return temp;
+    })
+  }
+  const deleteThisUserId = (index) => {
+    return (e) => {
+      setParticipants((prevState) => {
+        let temp = prevState.slice();
+        temp.splice(index, 1);
+        return temp;
+      })
+    }
+  }
+  const fetchUserNameFromId = (userId) => {
+    let target = users.filter((user, index, a) => {
+      console.log(user);
+      return user.id === userId;
+    })
+    console.log(target);
+    return target[0].user_name;
+  }
+
   // 送信ボタンのonClickイベント
   const executeProject = (event) => {
     if ( projectId > 0 ) {
@@ -238,18 +261,16 @@ const Project = ({ projectId }) => {
             <div className="row">
               <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                 <p>責任者ID</p>
-                <p>
-                  <select className="form-control form-select" name="user_id" id="user_id" onChange={updateProject("user_id")}>
-                    {users && users.map((value, index) => {
-                      return (<option value={value.id}>{value.user_name}</option>);
-                    })}
-                  </select>
-                </p>
+                <select className="form-control form-select" name="user_id" id="user_id" onChange={updateProject("user_id")} value={project.user_id}>
+                  {users && users.map((value, index) => {
+                    return (<option key={value.id} value={value.id}>{value.user_name}</option>);
+                  })}
+                </select>
               </div>
 
               <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                 <p>表示状態の指定</p>
-                <select className="form-select" name="is_displayed" onChange={updateProject("is_displayed")} value={project.is_displayed} defaultValue={project.is_displayed}>
+                <select className="form-select" name="is_displayed" onChange={updateProject("is_displayed")} value={project.is_displayed}>
                   {utility["displayTypes"] && utility["displayTypes"].map((value, index) => {
                     return (
                       <React.Fragment key={index}>
@@ -264,14 +285,21 @@ const Project = ({ projectId }) => {
             <div className="row">
               <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                 <p>プロジェクト参画ユーザーID(※ここで追加したユーザーのみプロジェクト情報を閲覧できます)</p>
-                <select name="users" className="form-control form-select" id="select-project-users" onChange={updateProject("users")}>
+                <select defaultValue="0" name="users" className="form-control form-select" id="select-project-users" onChange={(e) => updateParticipants(e)}>
                   {users && users.map((value, index) => {
-                    return (<option value={value.id}>{value.user_name}</option>);
+                    return (<option key={value.id} value={value.id}>{value.user_name}</option>);
                   })}
                 </select>
               </div>
               <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                 <div className="row" id="project-users">
+                  {participants && participants.map((value, index) => {
+                    return (
+                      <div key={value} className="col-3 mx-3 my-3 btn btn-outline-primary selected-project-users" onClick={deleteThisUserId(index)}>
+                        {fetchUserNameFromId(value)}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
