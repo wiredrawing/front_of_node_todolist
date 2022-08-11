@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import axios from 'axios'
-import { Link, Outlet, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import config from "../config/const";
 import moment from 'moment'
 
@@ -9,16 +9,21 @@ const ProjectLit = function() {
   const apiEndPoint = config.development.host + "/api/project/search";
   const API_TO_FETCH_UTILITY = config.development.host + "/api/utility";
   const [ projectList, setProjectList ] = React.useState([]);
-  const [utility, setUtility] = React.useState({});
+  const [ utility, setUtility ] = React.useState({});
 
   console.log("ProjectList ==>", useParams());
 
   // utility情報を取得する
   useEffect(() => {
     axios.get(API_TO_FETCH_UTILITY).then((result) => {
-      console.log(result);
+      if ( result.data.status ) {
+        setUtility(result.data.response);
+        return true;
+      }
+      setUtility({});
+      return false;
     })
-  });
+  }, []);
 
   useEffect(() => {
     // コンポーネント表示初回のみ
@@ -29,7 +34,7 @@ const ProjectLit = function() {
         setProjectList(result.data.response);
       }
     }).catch((error) => {
-
+      console.log(error);
     })
   }, []);
 
@@ -40,6 +45,20 @@ const ProjectLit = function() {
         naviate("/project/task/" + _index);
       }
     })(index)
+  }
+  // プロジェクト詳細ページへ
+  const moveToProjectDetail = (projectId) => {
+    return (e) => {
+      console.log("moveToProjectDetail ----> ", e);
+      return naviate("/project/" + projectId)
+    }
+  }
+  // プロジェクト編集ページ
+  const moveToProjectEdit = (projectId) => {
+    return (e) => {
+      console.log("moveToProjectEdit ----> ", e);
+      return naviate("/project/update/" + projectId)
+    }
   }
 
   return (
@@ -80,10 +99,10 @@ const ProjectLit = function() {
                   <p>{moment(value.end_date).format("yyyy年MM月DD日")}</p>
                 </td>
                 <td>
-                  <p className="btn btn-outline-primary"><Link to={'/project/' + value.id}>詳細</Link></p>
+                  <p onClick={moveToProjectDetail(value.id)} className="btn btn-outline-primary"><Link to={'/project/' + value.id}>詳細</Link></p>
                 </td>
                 <td>
-                  <p className="btn btn-outline-primary"><Link to={'/project/update/' + value.id}>編集</Link></p>
+                  <p onClick={moveToProjectEdit(value.id)} className="btn btn-outline-primary"><Link to={'/project/update/' + value.id}>編集</Link></p>
                 </td>
                 <td>
                   <p><Link to={'/create/task/' + value.id}>このプロジェクトにタスクを追加</Link></p>
