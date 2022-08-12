@@ -298,7 +298,7 @@ const Task = ({
                 <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                   <p>作業者ID</p>
                   <p>
-                    <select className="form-control form-select" name="user_id" id="user_id" onChange={onInput("user_id")}>
+                    <select className="form-control form-select" name="user_id" id="user_id" onChange={onInput("user_id")} value={task.user_id}>
                       {users && users.map((value, index) => {
                         return(<option key={value.id} value={value.id}>{value.user_name}</option>);
                       })}
@@ -310,7 +310,7 @@ const Task = ({
 
                 <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                   <p>タスクステータス</p>
-                  <select className="form-select" name="status" onChange={onInput("status")}>
+                  <select className="form-select" name="status" onChange={onInput("status")} value={task.status}>
                     {utility.status && utility.status.map((value, index) => {
                       return (
                         <React.Fragment key={value.id}>
@@ -325,7 +325,7 @@ const Task = ({
               <div className="row">
                 <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                   <p>優先度の設定</p>
-                  <select className="form-select" name="priority" onChange={onInput("priority")}>
+                  <select className="form-select" name="priority" onChange={onInput("priority")} value={task.priority}>
                     {utility.priority && utility.priority.map((value, index) => {
                       return (
                         <React.Fragment key={value.id}>
@@ -340,7 +340,7 @@ const Task = ({
               <div className="row">
                 <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
                   <p>タスク詳細</p>
-                  <textarea className="form-control" name="task_description" onChange={onInput("task_description")} defaultValue={task.task_description} rows="15"></textarea>
+                  <textarea className="form-control" name="task_description" onChange={onInput("task_description")} value={task.task_description} rows="15"></textarea>
                 </div>
               </div>
 

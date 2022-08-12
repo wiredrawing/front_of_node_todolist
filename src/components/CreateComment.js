@@ -77,26 +77,45 @@ const CreateComment = ({
 
   return (
     <React.Fragment>
-      <section id="create-new-comment-wrapper" style={createNewCommentWrapper}>
-        <div className="images-selected-now">
-          {imageIdList.map((value, index) => {
-            return (
-              <div className="images-to-be-uploaed" key={value}>
-                <img onDoubleClick={deleteThisImage(index)} alt={value} width="20%" className="ajust" src={API_TO_SHOW_IMAGE + "/" + value}/>
+      <div className="content-box-large">
+        <div className="row">
+          <form method="POST" action="/todo/comment/3" acceptCharset="UTF-8" className="form-group">
+            <div className="row ">
+              <Image callback={completedUploadingImage}/>
+            </div>
+
+            <div id="uploaded-file-block" className="row">
+              <div className="uploaded-file-block-unit col-sm-3 col-md-3 col-lg-3 col-xl-3">
+                {imageIdList.map((value, index) => {
+                  return (
+                    <div className="images-to-be-uploaed" key={value}>
+                      <img onDoubleClick={deleteThisImage(index)} alt={value} width="20%" className="ajust" src={API_TO_SHOW_IMAGE + "/" + value}/>
+                    </div>
+                  )
+                })}
               </div>
-            )
-          })}
+            </div>
+
+            <div className="row ">
+              <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <p>コメント内容</p>
+                <textarea onChange={(e) => {
+                  inputComment(e)
+                }} name="comment" className="form-control" id="task_description" defaultValue={comment.comment} value={comment.comment} cols="50 " rows="10"/>
+              </div>
+            </div>
+
+            <div className="row">
+              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+                <p>上記内容で店舗更新をする</p>
+                <p>
+                  <button id="post-task-comment" type="button" onClick={addNewComment} className="btn btn-primary btn-outline-primary">上記内容でコメント追加</button>
+                </p>
+              </div>
+            </div>
+          </form>
         </div>
-        <div id="new-comment" style={createNewCommentUnitBox}>
-          <textarea onChange={(e) => {
-            inputComment(e)
-          }} name="comment" defaultValue={comment.comment} value={comment.comment}/>
-        </div>
-        <div id="submit-new-comment">
-          <button onClick={addNewComment} className="btn btn-primary">上記内容でコメント追加</button>
-        </div>
-      </section>
-      <Image callback={completedUploadingImage}/>
+      </div>
     </React.Fragment>
   )
 }
