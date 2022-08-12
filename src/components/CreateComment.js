@@ -19,13 +19,6 @@ const CreateComment = ({
     image_id: imageIdList,
   });
 
-  const createNewCommentWrapper = {
-    display: "flex",
-    flexWrap: "wrap",
-  }
-  const createNewCommentUnitBox = {
-    width: "45%",
-  }
   const completedUploadingImage = (imageId) => {
     setImageIdList((previous) => {
       let temp = previous.slice();
@@ -108,9 +101,7 @@ const CreateComment = ({
             <div className="row">
               <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
                 <p>上記内容で店舗更新をする</p>
-                <p>
-                  <button id="post-task-comment" type="button" onClick={addNewComment} className="btn btn-primary btn-outline-primary">上記内容でコメント追加</button>
-                </p>
+                <button id="post-task-comment" type="button" onClick={addNewComment} className="btn btn-primary btn-outline-primary">上記内容でコメント追加</button>
               </div>
             </div>
           </form>

@@ -69,9 +69,10 @@ const Project = ({ projectId }) => {
     let newProject = Object.assign({}, project);
     // プロジェクト用画像を設定
     newProject.image_id = projectImages;
+    // プロジェクト参画メンバーを指定
+    newProject.users = participants;
     console.log(newProject);
     axios.post(apiEndPoint, newProject).then((result) => {
-
       // apiリクエスト失敗時
       if ( result.data.status !== true ) {
         return setTaskError(result.data.response)
@@ -120,7 +121,7 @@ const Project = ({ projectId }) => {
   // 更新対象のプロジェクトデータを取得する
   const fetchProjectToUpdate = (projectId) => {
     axios.get(API_TO_FETCH_PROJECT + "/" + projectId).then((result) => {
-      console.log(result);
+      console.log("API_TO_FETCH_PROJECT ---->", result);
       if ( result.data.status ) {
         let tempProject = result.data.response
         // project画像が登録されている場合
@@ -132,21 +133,36 @@ const Project = ({ projectId }) => {
           setProjectImages(temp)
           console.log("projectImages ------->", projectImages);
         }
+        // プロジェクト参画メンバーを取得
+        let users = [];
+        if (tempProject.ProjectUsers) {
+          tempProject.ProjectUsers.forEach((projectUser, index) => {
+            users.push(projectUser.user_id);
+          })
+        }
+        setParticipants((previous) => {
+          console.log("previous ------>", previous);
+          return users;
+        })
         setProject((previous) => {
+          console.log(previous);
           return {
             project_name: tempProject.project_name,
             project_description: tempProject.project_description,
             start_date: moment(tempProject.start_date).format("yyyy-MM-DD"),
             end_date: moment(tempProject.end_date).format("yyyy-MM-DD"),
             is_displayed: tempProject.is_displayed,
+            is_deleted: tempProject.is_deleted,
             user_id: tempProject.user_id,
             code_number: tempProject.code_number,
             image_id: temp,
+            users: users,
           }
         });
         // datePickerの値も更新
         setStartDate(new Date(tempProject.start_date));
         setEndDate(new Date(tempProject.end_date));
+        // プロジェクトへの参加者
       }
     })
     return true;
@@ -158,8 +174,11 @@ const Project = ({ projectId }) => {
     updateData.project_id = projectId;
     updateData.created_by = updateData.user_id;
     updateData.image_id = projectImages;
+    updateData.users = participants;
     axios.post(API_TO_UPDATE_PROJECT + "/" + projectId, updateData).then((result) => {
-      console.log(result);
+      if (result.data.status) {
+        console.log("プロジェクトデータアップデート完了後 ----> ", result);
+      }
     }).catch((error) => {
       console.log(error);
     })
@@ -190,7 +209,7 @@ const Project = ({ projectId }) => {
       return user.id === userId;
     })
     console.log(target);
-    return target[0].user_name;
+    return target[0]["user_name"];
   }
 
   // 送信ボタンのonClickイベント
@@ -209,6 +228,7 @@ const Project = ({ projectId }) => {
   useEffect(() => {
     axios.get(API_TO_FETCH_USERS).then((result) => {
       if ( result.data.status ) {
+        console.log("API_TO_FETCH_USERS ---->", result.data.response);
         setUsers(result.data.response);
       }
     })
