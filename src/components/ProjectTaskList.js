@@ -119,8 +119,7 @@ const ProjectTaskList = () => {
                     <td>{value.task_name}</td>
                     <td>{value.task_description}</td>
                     <td>
-                      {/*// <!-- userデータがnull出ない場合 -->*/}
-                      {value.User.user_name}
+                      {value.User && value.User.user_name}
                     </td>
                     <td>
                       {moment(value.start_date).format("yyyy年MM月DD日")}<br/>

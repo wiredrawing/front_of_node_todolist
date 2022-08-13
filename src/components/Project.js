@@ -208,7 +208,7 @@ const Project = ({ projectId }) => {
       console.log(user);
       return user.id === userId;
     })
-    console.log(target);
+    console.log("target -----> ", target);
     return target[0]["user_name"];
   }
 

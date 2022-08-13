@@ -15,7 +15,7 @@ const UserList = () => {
         setUsers(result.data.response);
       }
     })
-  })
+  }, [])
 
   return (
     <React.Fragment>
@@ -59,7 +59,7 @@ const UserList = () => {
                     <td>{value.id}</td>
                     <td>{value.user_name}</td>
                     <td></td>
-                    <td>0</td>
+                    <td>{value.Tasks && value.Tasks.length}</td>
                     <td>
                       {moment(value.created_at).format("yyyy年MM月DD日 HH時mm分")}<br/>
                       {moment(value.updated_at).format("yyyy年MM月DD日 HH時mm分")}
