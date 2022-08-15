@@ -56,20 +56,9 @@ function App() {
           <div className="row">
             <SideBar/>
             <div className="col-md-10" id="app">
-              <section id="wrapper">
+              <div className="content-box-large">
                 <div id="main-block">
                   <div className="App">
-                    <section id="global-menus">
-                      <div className="global-menu">
-                        <p><Link to="/project">プロジェクト一覧 http://localhost:3001/project </Link></p>
-                      </div>
-                      <div className="global-menu">
-                        <p><Link to="/project/create">新規プロジェクト作成 http://localhost:3001/project/create </Link></p>
-                      </div>
-                      <div className="global-menu">
-                        <p><Link to="/task">タスク一覧 http://localhost:3001/task/ </Link></p>
-                      </div>
-                    </section>
                     <Routes>
                       <Route path="/project/">
                         <Route path="" element={<ProjectList/>}></Route>
@@ -78,16 +67,18 @@ function App() {
                         <Route path="create" element={<CreateProject/>}></Route>
                         <Route path="update/:id" element={<UpdateProject/>}></Route>
                       </Route>
+
                       <Route path="/task/">
-                        <Route path="create/:projectId" element={<Task/>}></Route>
+                        <Route path="create/:projectId" element={<CreateTask/>}></Route>
                         <Route path="update/:projectId/:taskId" element={<UpdateTask/>}></Route>
                         <Route path=":id" element={<TaskDetail/>}></Route>
                         <Route path=":projctId" element={<TaskList/>}></Route>
                         <Route path="" element={<TaskList/>}></Route>
                       </Route>
-                      <Route path="/create/task/:projectId">
-                        <Route path="" element={<CreateTask/>}></Route>
-                      </Route>
+
+                      {/*<Route path="/create/task/:projectId">*/}
+                      {/*  <Route path="" element={<CreateTask/>}></Route>*/}
+                      {/*</Route>*/}
 
                       <Route path="/user/list/">
                         <Route path="" element={<UserList/>}></Route>
@@ -103,7 +94,7 @@ function App() {
                     </Routes>
                   </div>
                 </div>
-              </section>
+              </div>
             </div>
           </div>
         </div>

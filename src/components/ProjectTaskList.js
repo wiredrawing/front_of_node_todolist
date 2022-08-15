@@ -76,91 +76,87 @@ const ProjectTaskList = () => {
 
   return (
     <React.Fragment>
-      <div className="col-md-10" id="app">
-        <div className="content-box-large">
-          <div className="panel-heading">
-            <div className="row mb-5">
-              <div className="panel-title">現在登録中プロジェクトの一覧</div>
-            </div>
+      <div className="panel-heading">
+        <div className="row mb-5">
+          <div className="panel-title">現在登録中プロジェクトの一覧</div>
+        </div>
+      </div>
+      <div className="panel-heading">
+        <div className="row">
+          <div className="col-6 mb-5">
+            <p>検索キーワード</p>
+            <input type="text" className="form-control"/>
           </div>
-          <div className="panel-heading">
-            <div className="row">
-              <div className="col-6 mb-5">
-                <p>検索キーワード</p>
-                <input type="text" className="form-control"/>
-              </div>
-              <div className="col-6 mb-5">
-                <p>検索キーワード</p>
-                <input className="btn btn-primary" type="button" value="プロジェクトの検索"/>
-              </div>
-            </div>
-          </div>
-          <div className="panel-body">
-            <table cellPadding="0" cellSpacing="0" className="table table-bordered" id="example">
-              <thead>
-              <tr>
-                <th>ID</th>
-                <th>タスク名</th>
-                <th>概要</th>
-                <th>作業者</th>
-                <th>開始日<br/>終了日</th>
-                <th>作成日<br/>更新日</th>
-                <th>詳細</th>
-                <th>編集</th>
-                <th>優先順位<br/>ステータス</th>
-                <th>スター★</th>
-              </tr>
-              </thead>
-              <tbody>
-              {taskList && taskList.map((value, index) => {
-                return (
-                  <tr key={value.id}>
-                    <td>{value.id}</td>
-                    <td>{value.task_name}</td>
-                    <td>{value.task_description}</td>
-                    <td>
-                      {value.User && value.User.user_name}
-                    </td>
-                    <td>
-                      {moment(value.start_date).format("yyyy年MM月DD日")}<br/>
-                      {moment(value.end_date).format("yyyy年MM月DD日")}
-                    </td>
-                    <td>
-                      {moment(value.created_at).format("yyyy年MM月DD日 HH時mm分")}<br/>
-                      {moment(value.updated_at).format("yyyy年MM月DD日 HH時mm分")}
-                    </td>
-                    <td>
-                      {/* タスク詳細ページへ遷移 */}
-                      <button onClick={moveToTaskDetail(value.id)} className="btn btn-outline-info button-to-task-list-page ">詳細へ</button>
-                    </td>
-                    <td>
-                      {/* タスク編集ページへ遷移 */}
-                      <button onClick={moveToTaskUpdate(id, value.id)} className="btn btn-outline-info button-to-task-list-page ">編集</button>
-                    </td>
-                    <td>
-                      {utility.priority && utility.priority.map((priority) => {
-                        if ( parseInt(priority.id) === parseInt(value.priority) ) {
-                          return (<p key={priority.value}>{priority.value}</p>);
-                        }
-                      })}
-                      {utility.status && utility.status.map((status) => {
-                        if ( parseInt(status.id) === parseInt(value.status) ) {
-                          return (<p key={status.value}>{status.value}</p>);
-                        }
-                      })}
-                    </td>
-                    <td>
-                      <button className="btn btn-outline-primary" onClick={sendStar(value.id)}>
-                        ☆({value.Stars && value.Stars.length})
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
-              </tbody>
-            </table>
+          <div className="col-6 mb-5">
+            <p>検索キーワード</p>
+            <input className="btn btn-primary" type="button" value="プロジェクトの検索"/>
           </div>
         </div>
+      </div>
+      <div className="panel-body">
+        <table cellPadding="0" cellSpacing="0" className="table table-bordered" id="example">
+          <thead>
+          <tr>
+            <th>ID</th>
+            <th>タスク名</th>
+            <th>概要</th>
+            <th>作業者</th>
+            <th>開始日<br/>終了日</th>
+            <th>作成日<br/>更新日</th>
+            <th>詳細</th>
+            <th>編集</th>
+            <th>優先順位<br/>ステータス</th>
+            <th>スター★</th>
+          </tr>
+          </thead>
+          <tbody>
+          {taskList && taskList.map((value, index) => {
+            return (
+              <tr key={value.id}>
+                <td>{value.id}</td>
+                <td>{value.task_name}</td>
+                <td>{value.task_description}</td>
+                <td>
+                  {value.User && value.User.user_name}
+                </td>
+                <td>
+                  {moment(value.start_date).format("yyyy年MM月DD日")}<br/>
+                  {moment(value.end_date).format("yyyy年MM月DD日")}
+                </td>
+                <td>
+                  {moment(value.created_at).format("yyyy年MM月DD日 HH時mm分")}<br/>
+                  {moment(value.updated_at).format("yyyy年MM月DD日 HH時mm分")}
+                </td>
+                <td>
+                  {/* タスク詳細ページへ遷移 */}
+                  <button onClick={moveToTaskDetail(value.id)} className="btn btn-outline-info button-to-task-list-page ">詳細へ</button>
+                </td>
+                <td>
+                  {/* タスク編集ページへ遷移 */}
+                  <button onClick={moveToTaskUpdate(id, value.id)} className="btn btn-outline-info button-to-task-list-page ">編集</button>
+                </td>
+                <td>
+                  {utility.priority && utility.priority.map((priority) => {
+                    if ( parseInt(priority.id) === parseInt(value.priority) ) {
+                      return (<p key={priority.value}>{priority.value}</p>);
+                    }
+                  })}
+                  {utility.status && utility.status.map((status) => {
+                    if ( parseInt(status.id) === parseInt(value.status) ) {
+                      return (<p key={status.value}>{status.value}</p>);
+                    }
+                  })}
+                </td>
+                <td>
+                  <button className="btn btn-outline-primary" onClick={sendStar(value.id)}>
+                    ☆({value.Stars && value.Stars.length})
+                  </button>
+                </td>
+              </tr>
+            )
+          })}
+          </tbody>
+        </table>
       </div>
 
     </React.Fragment>

@@ -135,7 +135,7 @@ const Project = ({ projectId }) => {
         }
         // プロジェクト参画メンバーを取得
         let users = [];
-        if (tempProject.ProjectUsers) {
+        if ( tempProject.ProjectUsers ) {
           tempProject.ProjectUsers.forEach((projectUser, index) => {
             users.push(projectUser.user_id);
           })
@@ -176,7 +176,8 @@ const Project = ({ projectId }) => {
     updateData.image_id = projectImages;
     updateData.users = participants;
     axios.post(API_TO_UPDATE_PROJECT + "/" + projectId, updateData).then((result) => {
-      if (result.data.status) {
+      if ( result.data.status ) {
+        alert("プロジェクトの更新が完了しました");
         console.log("プロジェクトデータアップデート完了後 ----> ", result);
       }
     }).catch((error) => {
@@ -212,7 +213,11 @@ const Project = ({ projectId }) => {
     return target[0]["user_name"];
   }
 
-  // 送信ボタンのonClickイベント
+  /**
+   * 送信ボタンのonClickイベント
+   * @param event
+   * @returns {boolean}
+   */
   const executeProject = (event) => {
     if ( projectId > 0 ) {
       // 既存リソースの作成処理
@@ -255,98 +260,98 @@ const Project = ({ projectId }) => {
   }, [])
   return (
     <React.Fragment>
-      <div className="col-xs-12 col-sm-12 col-md-10 ">
-        <div className="content-box-large ">
-          <div className="panel-title ">プロジェクトの作成</div>
+      <div className="content-box-large ">
+        <div className="panel-title ">プロジェクトの作成</div>
+        <div className="row">
           <div className="row">
-            <div className="row">
-              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                <p>プロジェクト名</p>
-                <input className="form-control" onInput={updateProject("project_name")} type="text" name="project_name" defaultValue={project.project_name}></input>
-              </div>
+            <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <p>プロジェクト名</p>
+              <input className="form-control" onInput={updateProject("project_name")} type="text" name="project_name" defaultValue={project.project_name}></input>
+            </div>
+          </div>
+
+          <div className="row">
+            <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <p>開始日時</p>
+              <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={startDate} onChange={updateStartDate}/>
             </div>
 
-            <div className="row">
-              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                <p>開始日時</p>
-                <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={startDate} onChange={updateStartDate}/>
-              </div>
+            <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <p>終了日時</p>
+              <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={endDate} onChange={updateEndDate}/>
+            </div>
+          </div>
 
-              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                <p>終了日時</p>
-                <DatePicker className="form-control" dateFormat="yyyy-MM-dd" locale="ja" selected={endDate} onChange={updateEndDate}/>
-              </div>
+          <div className="row">
+            <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <p>責任者ID</p>
+              <select className="form-control form-select" name="user_id" id="user_id" onChange={updateProject("user_id")} value={project.user_id}>
+                {users && users.map((value, index) => {
+                  return (<option key={value.id} value={value.id}>{value.user_name}</option>);
+                })}
+              </select>
             </div>
 
-            <div className="row">
-              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                <p>責任者ID</p>
-                <select className="form-control form-select" name="user_id" id="user_id" onChange={updateProject("user_id")} value={project.user_id}>
-                  {users && users.map((value, index) => {
-                    return (<option key={value.id} value={value.id}>{value.user_name}</option>);
-                  })}
-                </select>
-              </div>
+            <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <p>表示状態の指定</p>
+              <select className="form-select" name="is_displayed" onChange={updateProject("is_displayed")} value={project.is_displayed}>
+                {utility["displayTypes"] && utility["displayTypes"].map((value, index) => {
+                  return (
+                    <React.Fragment key={index}>
+                      <option value={value.id}>{value.value}</option>
+                    </React.Fragment>
+                  )
+                })}
+              </select>
+            </div>
+          </div>
 
-              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                <p>表示状態の指定</p>
-                <select className="form-select" name="is_displayed" onChange={updateProject("is_displayed")} value={project.is_displayed}>
-                  {utility["displayTypes"] && utility["displayTypes"].map((value, index) => {
-                    return (
-                      <React.Fragment key={index}>
-                        <option value={value.id}>{value.value}</option>
-                      </React.Fragment>
-                    )
-                  })}
-                </select>
+          <div className="row">
+            <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <p>プロジェクト参画ユーザーID(※ここで追加したユーザーのみプロジェクト情報を閲覧できます)</p>
+              <select defaultValue="0" name="users" className="form-control form-select" id="select-project-users" onChange={(e) => updateParticipants(e)}>
+                {users && users.map((value, index) => {
+                  return (<option key={value.id} value={value.id}>{value.user_name}</option>);
+                })}
+              </select>
+            </div>
+            <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
+              <div className="row" id="project-users">
+                {participants && participants.map((value, index) => {
+                  return (
+                    <div key={value} className="col-3 mx-3 my-3 btn btn-outline-primary selected-project-users" onClick={deleteThisUserId(index)}>
+                      {fetchUserNameFromId(value)}
+                    </div>
+                  );
+                })}
               </div>
             </div>
+          </div>
 
-            <div className="row">
-              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                <p>プロジェクト参画ユーザーID(※ここで追加したユーザーのみプロジェクト情報を閲覧できます)</p>
-                <select defaultValue="0" name="users" className="form-control form-select" id="select-project-users" onChange={(e) => updateParticipants(e)}>
-                  {users && users.map((value, index) => {
-                    return (<option key={value.id} value={value.id}>{value.user_name}</option>);
-                  })}
-                </select>
-              </div>
-              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6">
-                <div className="row" id="project-users">
-                  {participants && participants.map((value, index) => {
-                    return (
-                      <div key={value} className="col-3 mx-3 my-3 btn btn-outline-primary selected-project-users" onClick={deleteThisUserId(index)}>
-                        {fetchUserNameFromId(value)}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            <div id="to-register-project-with-images">
-              {projectImages.map((value, index) => {
-                return (
+          <div id="to-register-project-with-images" className="row">
+            {projectImages.map((value, index) => {
+              return (
+                <div className="col-sm-3 col-md-3 col-lg-3 col-xl-3">
                   <div className="selected-image-unit" key={value} onDoubleClick={deleteThisImage(index)}>
-                    <img alt={value} width="10%" src={apiToShowImage + "/" + value}/>
+                    <img className="ajust" alt={value} width="100%" src={apiToShowImage + "/" + value}/>
                   </div>
-                )
-              })}
+                </div>
+              )
+            })}
+          </div>
+          {/*ファイルアップロード用コンポーネント*/}
+          <Image callback={completedUploadingImage}></Image>
+          <div className="row ">
+            <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+              <p>プロジェクト詳細</p>
+              <textarea className="form-control" onInput={updateProject("project_description")} name="project_description" defaultValue={project.project_description} rows="10"/>
             </div>
-            {/*ファイルアップロード用コンポーネント*/}
-            <Image callback={completedUploadingImage}></Image>
-            <div className="row ">
-              <div className="col-sm-12 col-md-12 col-lg-12 col-xl-12 ">
-                <p>プロジェクト詳細</p>
-                <textarea className="form-control" onInput={updateProject("project_description")} name="project_description" defaultValue={project.project_description} rows="10"/>
-              </div>
-            </div>
+          </div>
 
-            <div className="row">
-              <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 ">
-                <p>上記内容でタスクを作成する</p>
-                <button className="common-button-style" onClick={executeProject}>上記内容で新規登録</button>
-              </div>
+          <div className="row">
+            <div className="col-sm-6 col-md-6 col-lg-6 col-xl-6 ">
+              <p>上記内容でタスクを作成する</p>
+              <button className="common-button-style" onClick={executeProject}>上記内容で新規登録</button>
             </div>
           </div>
         </div>

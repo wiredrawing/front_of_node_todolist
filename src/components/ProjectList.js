@@ -60,7 +60,13 @@ const ProjectLit = function() {
       return naviate("/project/update/" + projectId)
     }
   }
-
+  // 指定したプロジェクトに追加のタスク情報を登録する
+  const addNewTask = (projectId) => {
+    return (e) => {
+      console.log("addNewTask ----->", e);
+      return naviate("/task/create/" + projectId);
+    }
+  }
   return (
     <React.Fragment>
       <table className="table table-bordered">
@@ -71,7 +77,7 @@ const ProjectLit = function() {
             プロジェクト名<br/>
             登録済みタスク数
           </td>
-          <td>プロジェクト概要</td>
+          {/*<td>プロジェクト概要</td>*/}
           <td>開始予定日<br/>終了予定日</td>
           <td>詳細</td>
           <td>編集</td>
@@ -91,9 +97,9 @@ const ProjectLit = function() {
                   <p>{value.project_name}</p>
                   <p>({value.Tasks.length}件)</p>
                 </td>
-                <td>
-                  <p>{value.project_description}</p>
-                </td>
+                {/*<td>*/}
+                {/*  <p>{value.project_description}</p>*/}
+                {/*</td>*/}
                 <td>
                   <p>{moment(value.start_date).format("yyyy年MM月DD日")}</p>
                   <p>{moment(value.end_date).format("yyyy年MM月DD日")}</p>
@@ -105,7 +111,7 @@ const ProjectLit = function() {
                   <p onClick={moveToProjectEdit(value.id)} className="btn btn-outline-primary"><Link to={'/project/update/' + value.id}>編集</Link></p>
                 </td>
                 <td>
-                  <p><Link to={'/create/task/' + value.id}>このプロジェクトにタスクを追加</Link></p>
+                  <p className="btn btn-outline-primary" onClick={addNewTask(value.id)}>タスク追加</p>
                 </td>
                 <td>
                   <button onClick={moveToTaskList(value.id)} className="btn btn-outline-info button-to-task-list-page">登録ずみタスク一覧へ</button>

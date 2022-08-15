@@ -6,7 +6,7 @@ import moment from 'moment'
 
 // projectIdに左右されないタスク一覧を取得する
 function TaskList() {
-  const apiEndPoint = config.development.host + "/api/task";
+  const API_TO_FETCH_TASK_LIST = config.development.host + "/api/task";
   const API_TO_SEND_STAR = config.development.host + "/api/star";
   const API_TO_FETCH_UTILITY = config.development.host + "/api/utility";
   const [utility, setUtility ] = useState({});
@@ -21,7 +21,7 @@ function TaskList() {
   React.useEffect(() => {
     // ユーティリティを取得
     fetchUtility();
-    axios.get(apiEndPoint, {}).then((result) => {
+    axios.get(API_TO_FETCH_TASK_LIST, {}).then((result) => {
       console.log(result);
       if ( result.data.status ) {
         setTaskList(result.data.response)
@@ -59,7 +59,7 @@ function TaskList() {
       }
       axios.post(API_TO_SEND_STAR + "/" + taskId, postData).then((result) => {
         console.log(result);
-        axios.get(apiEndPoint, {}).then((result) => {
+        axios.get(API_TO_FETCH_TASK_LIST, {}).then((result) => {
           console.log(result);
           if ( result.data.status ) {
             setTaskList(result.data.response)
@@ -80,13 +80,14 @@ function TaskList() {
             <td>タスクID</td>
             <td>プロジェクトID</td>
             <td>タスク名</td>
-            <td>タスク概要</td>
+            {/*<td>タスク概要</td>*/}
             <td>スター</td>
             <td>優先順位<br/>作業ステータス</td>
             <td>プロジェクト詳細へ</td>
             <td>タスク開始予定日<br/>タスク終了予定日</td>
-            <td>詳細</td>
+            <td>コメント</td>
             <td>編集</td>
+            <td>作成日<br/>更新日</td>
           </tr>
         </thead>
         <tbody>
@@ -96,7 +97,7 @@ function TaskList() {
               <td>{value.id}</td>
               <td>{value.project_id}</td>
               <td>{value.task_name}</td>
-              <td>{value.task_description}</td>
+              {/*<td>{value.task_description}</td>*/}
               <td>
                 ☆:{value.Stars.length}<br/>
                 <button onClick={sendStar(value.id)} className="btn btn-outline-primary">☆を送る</button>
@@ -122,8 +123,12 @@ function TaskList() {
                 {moment(value.start_date).format("yyyy年MM月DD日")}<br/>
                 {moment(value.end_date).format("yyyy年MM月DD日")}
               </td>
-              <td><button onClick={toTaskDetail(value.id)} className="btn btn-outline-info button-to-task-list-page">詳細へ</button></td>
+              <td><button onClick={toTaskDetail(value.id)} className="btn btn-outline-info button-to-task-list-page">コメントを追加</button></td>
               <td><button onClick={toTaskUpdate(value.project_id, value.id)} className="btn btn-outline-info button-to-task-list-page">編集へ</button></td>
+              <td>
+                {moment(value.created_at).format("yyyy年MM月DD日")}<br/>
+                {moment(value.updated_at).format("yyyy年MM月DD日")}
+              </td>
             </tr>
           )
         })}
